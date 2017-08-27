@@ -33,11 +33,11 @@ const gravAcceleration = 9.81*pixPerMet/(framesPerSec^2);
 const playerWidth = 10;
 const playerHeight = 10;
 const playerMaxSpeedHorizontal = 10;
-const playerMaxSpeedVertical = 15;
+const playerMaxSpeedVertical = 10;
 const playerAccHorizontalGround = 3;
 const playerAccHorizontalAir = 0.5;
 const playerAccVertical = 5*gravAcceleration;
-const maxJumpDuration = 5; // When jumping, apply vertical acceleration for at most this many frames.
+const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
 const player = {
     x: 20,
@@ -87,11 +87,13 @@ const draw = () => {
     if (player.up) {
         if (player.y > canvasHeight - playerHeight/2 - 1) {
             player.jumpDuration = 0;
+            player.vy -= playerAccVertical;
         }
         if (player.jumpDuration < maxJumpDuration) {
-            player.jumpDuration += 1;
+//            player.vy = -playerMaxSpeedVertical;
             player.vy -= playerAccVertical;
             if (player.vy < -playerMaxSpeedVertical) {
+                console.log('max jump speed');
                 player.vy = -playerMaxSpeedVertical;
             }
         }
@@ -108,6 +110,7 @@ const draw = () => {
         player.x = canvasWidth - playerWidth/2;
     }
     if (player.y < canvasHeight - playerHeight/2) {
+        player.jumpDuration += 1;
         player.vy += gravAcceleration;
         if (player.vy > playerMaxSpeedVertical) {
             player.vy = playerMaxSpeedVertical;
@@ -122,7 +125,7 @@ const draw = () => {
     }
 
     // Clear previous frame.
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+//    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     // Render new frame.
     ctx.beginPath();
