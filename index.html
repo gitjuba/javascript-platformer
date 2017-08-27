@@ -28,15 +28,17 @@ const ctx = canvas.getContext('2d');
 // Space is expressed in pixels and time in frames in all kinematic quantities such as speed and acceleration.
 const pixPerMet = 5;
 const framesPerSec = 60;
-const gravAcceleration = 9.81*pixPerMet/(framesPerSec^2);
+const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
 
 const playerWidth = 10;
 const playerHeight = 10;
+const jumpRegisterDistance = 4;
 const playerMaxSpeedHorizontal = 10;
 const playerMaxSpeedVertical = 10;
-const playerAccHorizontalGround = 3;
-const playerAccHorizontalAir = 0.5;
-const playerAccVertical = 5*gravAcceleration;
+const playerAccHorizontalGround = 2;
+const playerAccHorizontalAirForced = 0.5;
+const playerAccHorizontalAirFree = 0.1;
+const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
 const player = {
@@ -47,16 +49,17 @@ const player = {
     left: false,
     right: false,
     up: false,
+    newJump: true,
     jumpDuration: 0
 };
 
 const draw = () => {
     // Handle input.
     if (player.left) {
-        if (player.y > canvasHeight - playerHeight/2 - 1) {
+        if (player.y > canvasHeight - playerHeight/2 - jumpRegisterDistance) {
             player.vx -= playerAccHorizontalGround;
         } else {
-            player.vx -= playerAccHorizontalAir;
+            player.vx -= playerAccHorizontalAirForced;
         }
         if (player.vx < -playerMaxSpeedHorizontal) {
             player.vx = -playerMaxSpeedHorizontal;
@@ -65,37 +68,37 @@ const draw = () => {
         if (player.y > canvasHeight - playerHeight/2 - 1) {
             player.vx += playerAccHorizontalGround;
         } else {
-            player.vx += playerAccHorizontalAir;
+            player.vx += playerAccHorizontalAirForced;
         }
         if (player.vx > playerMaxSpeedHorizontal) {
             player.vx = playerMaxSpeedHorizontal;
         }
     } else {
-        if (player.y > canvasHeight - playerHeight/2 - 1) {
+        if (player.y > canvasHeight - playerHeight/2 - jumpRegisterDistance) {
             player.vx += player.vx < 0 ? playerAccHorizontalGround : -playerAccHorizontalGround;
             if (Math.abs(player.vx) < 2*playerAccHorizontalGround) {
                 player.vx = 0;
             }
         } else {
-            player.vx += player.vx < 0 ? playerAccHorizontalAir : -playerAccHorizontalAir;
-            if (Math.abs(player.vx) < 2*playerAccHorizontalAir) {
+            player.vx += player.vx < 0 ? playerAccHorizontalAirFree : -playerAccHorizontalAirFree;
+            if (Math.abs(player.vx) < 2*playerAccHorizontalAirFree) {
                 player.vx = 0;
             }
         }
     }
 
-    if (player.up) {
+    if (player.up && player.newJump) {
         if (player.y > canvasHeight - playerHeight/2 - 1) {
             player.jumpDuration = 0;
             player.vy -= playerAccVertical;
         }
         if (player.jumpDuration < maxJumpDuration) {
-//            player.vy = -playerMaxSpeedVertical;
             player.vy -= playerAccVertical;
             if (player.vy < -playerMaxSpeedVertical) {
-                console.log('max jump speed');
                 player.vy = -playerMaxSpeedVertical;
             }
+        } else {
+            player.newJump = false;
         }
     }
 
@@ -111,7 +114,7 @@ const draw = () => {
     }
     if (player.y < canvasHeight - playerHeight/2) {
         player.jumpDuration += 1;
-        player.vy += gravAcceleration;
+        player.vy += gravitationalPull;
         if (player.vy > playerMaxSpeedVertical) {
             player.vy = playerMaxSpeedVertical;
         }
@@ -125,7 +128,7 @@ const draw = () => {
     }
 
     // Clear previous frame.
-//    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     // Render new frame.
     ctx.beginPath();
@@ -167,6 +170,7 @@ window.addEventListener('keyup', e => {
         case 38:
             // up
             player.up = false;
+            player.newJump = true;
             break;
         case 39:
             // right
