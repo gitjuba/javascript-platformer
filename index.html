@@ -57,9 +57,16 @@ const player = {
     jumpDuration: 0
 };
 
+const obstacle = {
+    x: 200,
+    y: 600,
+    w: 100,
+    h: 10
+};
+
 const onSurface = () => {
     // Check whether the player is in a position where it can execute a jump.
-    return player.y >= bottomEdge;
+    return player.y === bottomEdge || (player.y === obstacle.y - obstacle.h && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w);
 };
 
 const draw = () => {
@@ -111,8 +118,14 @@ const draw = () => {
         }
     }
 
+    //
     // Apply physics.
+    //
+
+    // Advance player state, check for collisions with obstacles.
+
     player.x += player.vx;
+    // Level bounds
     if (player.x < leftEdge) {
         player.vx = 0;
         player.x = leftEdge;
@@ -120,6 +133,35 @@ const draw = () => {
     if (player.x > rightEdge) {
         player.vx = 0;
         player.x = rightEdge;
+    }
+    // Obstacle.
+    let colliding = false;
+    const overlapLeft = player.x + playerWidth - obstacle.x;
+    const overlapRight = obstacle.x + obstacle.w - player.x;
+    let overlapX = 0;
+    let overlapY = 0;
+    if (overlapLeft > 0 && overlapRight > 0) {
+        if (overlapLeft > overlapRight) {
+            overlapX = overlapRight;
+        } else {
+            overlapX = -overlapLeft;
+        }
+        const overlapTop = player.y + playerHeight - obstacle.y;
+        const overlapBottom = obstacle.y + obstacle.h - player.y;
+        if (overlapTop > 0 && overlapBottom > 0) {
+            if (overlapTop > overlapBottom) {
+                overlapY = overlapBottom;
+            } else {
+                overlapY = -overlapTop;
+            }
+            if (Math.abs(overlapX) > Math.abs(overlapY)) {
+                player.y += overlapY;
+                player.vy = 0;
+            } else {
+                player.x += overlapX;
+                player.vx = 0;
+            }
+        }
     }
     if (!onSurface()) {
         player.jumpDuration += 1;
