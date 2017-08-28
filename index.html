@@ -32,7 +32,13 @@ const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
 
 const playerWidth = 10;
 const playerHeight = 10;
-const jumpRegisterDistance = 4;
+
+const jumpRegisterDistance = 4; // The player can jump even if not quite touching platform.
+
+const bottomJumpZoneHeight = canvasHeight - playerHeight/2 -  jumpRegisterDistance;
+const leftEdge = playerWidth/2;
+const rightEdge = canvasWidth - playerWidth/2;
+
 const playerMaxSpeedHorizontal = 10;
 const playerMaxSpeedVertical = 10;
 const playerAccHorizontalGround = 2;
@@ -56,7 +62,7 @@ const player = {
 const draw = () => {
     // Handle input.
     if (player.left) {
-        if (player.y > canvasHeight - playerHeight/2 - jumpRegisterDistance) {
+        if (player.y > bottomJumpZoneHeight) {
             player.vx -= playerAccHorizontalGround;
         } else {
             player.vx -= playerAccHorizontalAirForced;
@@ -65,7 +71,7 @@ const draw = () => {
             player.vx = -playerMaxSpeedHorizontal;
         }
     } else if (player.right) {
-        if (player.y > canvasHeight - playerHeight/2 - 1) {
+        if (player.y > bottomJumpZoneHeight) {
             player.vx += playerAccHorizontalGround;
         } else {
             player.vx += playerAccHorizontalAirForced;
@@ -74,7 +80,7 @@ const draw = () => {
             player.vx = playerMaxSpeedHorizontal;
         }
     } else {
-        if (player.y > canvasHeight - playerHeight/2 - jumpRegisterDistance) {
+        if (player.y > bottomJumpZoneHeight) {
             player.vx += player.vx < 0 ? playerAccHorizontalGround : -playerAccHorizontalGround;
             if (Math.abs(player.vx) < 2*playerAccHorizontalGround) {
                 player.vx = 0;
@@ -88,7 +94,7 @@ const draw = () => {
     }
 
     if (player.up && player.newJump) {
-        if (player.y > canvasHeight - playerHeight/2 - 1) {
+        if (player.y > bottomJumpZoneHeight) {
             player.jumpDuration = 0;
             player.vy -= playerAccVertical;
         }
