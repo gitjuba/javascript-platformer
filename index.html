@@ -33,9 +33,9 @@ const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
 const playerWidth = 10;
 const playerHeight = 10;
 
-const bottomEdge = canvasHeight - playerHeight/2;
-const leftEdge = playerWidth/2;
-const rightEdge = canvasWidth - playerWidth/2;
+const bottomEdge = canvasHeight - playerHeight;
+const leftEdge = 0;
+const rightEdge = canvasWidth - playerWidth;
 
 const playerMaxSpeedHorizontal = 10;
 const playerMaxSpeedVertical = 10;
@@ -149,7 +149,7 @@ const draw = () => {
 
     // Draw player.
     ctx.fillStyle = 'blue';
-    ctx.fillRect(player.x - playerWidth/2, player.y - playerHeight/2, playerWidth, playerHeight);
+    ctx.fillRect(player.x, player.y, playerWidth, playerHeight);
     window.requestAnimationFrame(draw);
 };
 
