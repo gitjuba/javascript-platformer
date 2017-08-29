@@ -33,10 +33,6 @@ const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
 const playerWidth = 10;
 const playerHeight = 10;
 
-const bottomEdge = canvasHeight - playerHeight;
-const leftEdge = 0;
-const rightEdge = canvasWidth - playerWidth;
-
 const playerMaxSpeedHorizontal = 10;
 const playerMaxSpeedVertical = 10;
 const playerAccHorizontalGround = 2;
@@ -45,9 +41,12 @@ const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
-const player = {
-    x: 20,
-    y: 20,
+const startLocation = { x: 20, y: 20 };
+
+const resetPlayer = () => ({
+    alive: true,
+    x: startLocation.x,
+    y: startLocation.y,
     vx: 0,
     vy: 0,
     left: false,
@@ -55,91 +54,35 @@ const player = {
     up: false,
     newJump: true,
     jumpDuration: 0
-};
+});
 
-const obstacle = {
-    x: 200,
-    y: 600,
-    w: 100,
-    h: 10
+let player = resetPlayer();
+
+const obstacles = [
+    {x: 200, y: 600, w: 100, h: 10},
+    {x: 400, y: 600, w: 100, h: 10}
+];
+
+const isDead = () => {
+    return player.y > canvasHeight;
 };
 
 const onSurface = () => {
-    // Check whether the player is in a position where it can execute a jump.
-    return player.y === bottomEdge || (player.y === obstacle.y - obstacle.h && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w);
+    // Check whether the player is in a position where they can execute a jump, i.e. on top of an obstacle.
+    for (const obstacle of obstacles) {
+        if (player.y === obstacle.y - obstacle.h && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
+            return true;
+        }
+    }
+    return false;
 };
 
-const draw = () => {
-    // Handle input. Player input changes the velocity.
-    if (player.left) {
-        if (onSurface()) {
-            player.vx -= playerAccHorizontalGround;
-        } else {
-            player.vx -= playerAccHorizontalAirForced;
-        }
-        if (player.vx < -playerMaxSpeedHorizontal) {
-            player.vx = -playerMaxSpeedHorizontal;
-        }
-    } else if (player.right) {
-        if (onSurface()) {
-            player.vx += playerAccHorizontalGround;
-        } else {
-            player.vx += playerAccHorizontalAirForced;
-        }
-        if (player.vx > playerMaxSpeedHorizontal) {
-            player.vx = playerMaxSpeedHorizontal;
-        }
-    } else {
-        if (onSurface()) {
-            player.vx += player.vx < 0 ? playerAccHorizontalGround : -playerAccHorizontalGround;
-            if (Math.abs(player.vx) < 2*playerAccHorizontalGround) {
-                player.vx = 0;
-            }
-        } else {
-            player.vx += player.vx < 0 ? playerAccHorizontalAirFree : -playerAccHorizontalAirFree;
-            if (Math.abs(player.vx) < 2*playerAccHorizontalAirFree) {
-                player.vx = 0;
-            }
-        }
-    }
-
-    if (player.up && player.newJump) {
-        if (onSurface()) {
-            player.jumpDuration = 0;
-            player.vy -= playerAccVertical;
-        }
-        if (player.jumpDuration < maxJumpDuration) {
-            player.vy -= playerAccVertical;
-            if (player.vy < -playerMaxSpeedVertical) {
-                player.vy = -playerMaxSpeedVertical;
-            }
-        } else {
-            player.newJump = false;
-        }
-    }
-
-    //
-    // Apply physics.
-    //
-
-    // Advance player state, check for collisions with obstacles.
-
-    player.x += player.vx;
-    // Level bounds
-    if (player.x < leftEdge) {
-        player.vx = 0;
-        player.x = leftEdge;
-    }
-    if (player.x > rightEdge) {
-        player.vx = 0;
-        player.x = rightEdge;
-    }
-    // Obstacle.
-    let colliding = false;
-    const overlapLeft = player.x + playerWidth - obstacle.x;
-    const overlapRight = obstacle.x + obstacle.w - player.x;
+// Calculate the overlap of the player and an obstacle. Push the player back.
+const handleCollision = obstacle => {
     let overlapX = 0;
     let overlapY = 0;
+    const overlapLeft = player.x + playerWidth - obstacle.x;
+    const overlapRight = obstacle.x + obstacle.w - player.x;
     if (overlapLeft > 0 && overlapRight > 0) {
         if (overlapLeft > overlapRight) {
             overlapX = overlapRight;
@@ -163,36 +106,99 @@ const draw = () => {
             }
         }
     }
-    if (!onSurface()) {
+};
+
+const update = () => {
+    // Handle input. Player input changes the velocity.
+    const isOnSurface = onSurface();
+    if (player.left) {
+        if (isOnSurface) {
+            player.vx -= playerAccHorizontalGround;
+        } else {
+            player.vx -= playerAccHorizontalAirForced;
+        }
+        if (player.vx < -playerMaxSpeedHorizontal) {
+            player.vx = -playerMaxSpeedHorizontal;
+        }
+    } else if (player.right) {
+        if (isOnSurface) {
+            player.vx += playerAccHorizontalGround;
+        } else {
+            player.vx += playerAccHorizontalAirForced;
+        }
+        if (player.vx > playerMaxSpeedHorizontal) {
+            player.vx = playerMaxSpeedHorizontal;
+        }
+    } else {
+        if (isOnSurface) {
+            player.vx += player.vx < 0 ? playerAccHorizontalGround : -playerAccHorizontalGround;
+            if (Math.abs(player.vx) < 2*playerAccHorizontalGround) {
+                player.vx = 0;
+            }
+        } else {
+            player.vx += player.vx < 0 ? playerAccHorizontalAirFree : -playerAccHorizontalAirFree;
+            if (Math.abs(player.vx) < 2*playerAccHorizontalAirFree) {
+                player.vx = 0;
+            }
+        }
+    }
+
+    if (player.up && player.newJump) {
+        if (isOnSurface) {
+            player.jumpDuration = 0;
+            player.vy -= playerAccVertical;
+        }
+        if (player.jumpDuration < maxJumpDuration) {
+            player.vy -= playerAccVertical;
+            if (player.vy < -playerMaxSpeedVertical) {
+                player.vy = -playerMaxSpeedVertical;
+            }
+        } else {
+            player.newJump = false;
+        }
+    }
+
+    //
+    // Apply physics.
+    //
+
+    // Advance player state.
+    player.x += player.vx;
+    if (!isOnSurface) {
         player.jumpDuration += 1;
         player.vy += gravitationalPull;
         if (player.vy > playerMaxSpeedVertical) {
             player.vy = playerMaxSpeedVertical;
         }
         player.y += player.vy;
-        if (player.y >= bottomEdge) {
-            player.vy = 0;
-            player.y = bottomEdge;
-        }
     } else {
+        // The player has just jumped.
         player.y += player.vy;
     }
 
-    // Clear previous frame.
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    // Detect collisions.
+    obstacles.forEach(obstacle => handleCollision(obstacle));
+
+    if (isDead()) {
+        player = resetPlayer();
+    }
 
     //
     // Render new frame.
     //
 
+    // Clear previous frame.
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
     // Draw obstacles.
     ctx.fillStyle = 'black';
-    ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+    obstacles.forEach(obstacle => ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h));
 
     // Draw player.
     ctx.fillStyle = 'blue';
     ctx.fillRect(player.x, player.y, playerWidth, playerHeight);
-    window.requestAnimationFrame(draw);
+
+    window.requestAnimationFrame(update);
 };
 
 // Register input.
@@ -237,7 +243,7 @@ window.addEventListener('keyup', e => {
     }
 });
 
-draw();
+update();
 
 </script>
 
