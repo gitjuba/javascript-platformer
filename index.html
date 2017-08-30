@@ -30,13 +30,13 @@ const pixPerMet = 5;
 const framesPerSec = 60;
 const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
 
-const playerWidth = 10;
-const playerHeight = 10;
+const playerWidth = 20;
+const playerHeight = 20;
 
-const playerMaxSpeedHorizontal = 10;
-const turboMultiplier = 2;
+const turboMultiplier = 1.5;
+const playerMaxSpeedHorizontal = 7;
 const playerMaxSpeedVertical = 10;
-const playerAccHorizontalGround = 2;
+const playerAccHorizontalGround = 1.5;
 const playerAccHorizontalAirForced = 0.5;
 const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
@@ -68,7 +68,7 @@ const obstacles = [
     {x: 1050, y: 250, w: 100, h: 10}
 ];
 
-const goal = {x: 1095, y: 150, w: 10, h:10};
+const goal = {x: 1090, y: 150, w: 20, h:20};
 
 const isDead = () => {
     return player.y > canvasHeight;
