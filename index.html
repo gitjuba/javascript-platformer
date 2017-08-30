@@ -42,12 +42,58 @@ const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
-const startLocation = { x: 50, y: 50 };
+const levels = [
+    {
+        startLocation: { x: 50, y: 50 },
+        goal: { x: 1090, y: 150, w: 20, h:20 },
+        obstacles: [
+            {x: 50, y: 650, w: 300, h: 10},
+            {x: 400, y: 550, w: 100, h: 10},
+            {x: 550, y: 450, w: 300, h: 10},
+            {x: 900, y: 350, w: 100, h: 10},
+            {x: 1050, y: 250, w: 100, h: 10}
+        ]
+    },
+    {
+        startLocation: { x: 50, y: 600 },
+        goal: { x: 1150, y: 650, w: 20, h:20 },
+        obstacles: [
+            {x: 50, y: 650, w: 100, h: 10},
+            {x: 150, y: 550, w: 100, h: 10},
+            {x: 50, y: 450, w: 100, h: 10},
+            {x: 150, y: 350, w: 100, h: 10},
+            {x: 50, y: 250, w: 100, h: 10},
+            {x: 150, y: 150, w: 100, h: 10},
+            {x: 250, y: 50, w: 350, h: 10},
+            {x: 750, y: 50, w: 350, h: 10}
+        ]
+    },
+    {
+        startLocation: { x: 70, y: 600 },
+        goal: { x: 190, y: 70, w: 20, h:20 },
+        obstacles: [
+            {x: 50, y: 650, w: 100, h: 10},
+            {x: 40, y: 550, w: 10, h: 110},
+            {x: 440, y: 550, w: 100, h: 10},
+            {x: 540, y: 450, w: 10, h: 110},
+            {x: 550, y: 550, w: 100, h: 10},
+            {x: 950, y: 450, w: 100, h: 10},
+            {x: 1050, y: 350, w: 10, h: 110},
+            {x: 1050, y: 340, w: 100, h: 10},
+            {x: 650, y: 250, w: 100, h: 10},
+            {x: 640, y: 150, w: 10, h: 110},
+            {x: 540, y: 250, w: 100, h: 10},
+            {x: 140, y: 150, w: 100, h: 10},
+            {x: 130, y: 50, w: 10, h: 110}
+        ]
+    }
+];
 
-const resetPlayer = () => ({
+const resetPlayer = levelInd => ({
+    levelProgress: levelInd,
     alive: true,
-    x: startLocation.x,
-    y: startLocation.y,
+    x: levels[levelInd].startLocation.x,
+    y: levels[levelInd].startLocation.y,
     vx: 0,
     vy: 0,
     left: false,
@@ -58,25 +104,15 @@ const resetPlayer = () => ({
     turbo: false
 });
 
-let player = resetPlayer();
-
-const obstacles = [
-    {x: 50, y: 650, w: 300, h: 10},
-    {x: 400, y: 550, w: 100, h: 10},
-    {x: 550, y: 450, w: 300, h: 10},
-    {x: 900, y: 350, w: 100, h: 10},
-    {x: 1050, y: 250, w: 100, h: 10}
-];
-
-const goal = {x: 1090, y: 150, w: 20, h:20};
+let player = resetPlayer(0);
 
 const isDead = () => {
     return player.y > canvasHeight;
 };
 
-const onSurface = () => {
+const onSurface = lvl => {
     // Check whether the player is in a position where they can execute a jump, i.e. on top of an obstacle.
-    for (const obstacle of obstacles) {
+    for (const obstacle of lvl.obstacles) {
         if (player.y === obstacle.y - playerHeight && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
             return true;
         }
@@ -120,7 +156,8 @@ const handleCollision = obstacle => {
 
 const update = () => {
     // Handle input. Player input changes the velocity.
-    const isOnSurface = onSurface();
+    const level = levels[player.levelProgress];
+    const isOnSurface = onSurface(level);
     const turbo = player.turbo ? turboMultiplier : 1;
     if (player.left) {
         if (isOnSurface) {
@@ -188,15 +225,15 @@ const update = () => {
     }
 
     // Check if goal is reached.
-    if (handleCollision(goal)) {
-        player = resetPlayer();
+    if (handleCollision(level.goal)) {
+        player = resetPlayer(player.levelProgress === levels.length - 1 ? 0 : player.levelProgress + 1);
     }
 
     // Detect collisions.
-    obstacles.forEach(obstacle => handleCollision(obstacle));
+    level.obstacles.forEach(obstacle => handleCollision(obstacle));
 
     if (isDead()) {
-        player = resetPlayer();
+        player = resetPlayer(player.levelProgress);
     }
 
     //
@@ -208,11 +245,11 @@ const update = () => {
 
     // Draw obstacles.
     ctx.fillStyle = 'black';
-    obstacles.forEach(obstacle => ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h));
+    level.obstacles.forEach(obstacle => ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h));
 
     // Draw goal
     ctx.fillStyle = 'red';
-    ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
+    ctx.fillRect(level.goal.x, level.goal.y, level.goal.w, level.goal.h);
 
     // Draw player.
     ctx.fillStyle = 'blue';

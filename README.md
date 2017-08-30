@@ -10,14 +10,15 @@ A (for now) minimalistic platformer written in JavaScript.
 * ~~Level goal~~
 * ~~Multiple obstacles~~
 * ~~Turbo/run button~~
-* Multiple levels; level advancement
+* ~~Multiple levels; level advancement~~
+* Start and end screens
 * Finite number of lives; game over
 
 ## Goal II
 
+* Level editor
 * Wall jumps
 * Double jumps
-* Level editor
 * Level timing
 * Local best times list
 
