@@ -75,7 +75,7 @@ const isDead = () => {
 const onSurface = () => {
     // Check whether the player is in a position where they can execute a jump, i.e. on top of an obstacle.
     for (const obstacle of obstacles) {
-        if (player.y === obstacle.y - obstacle.h && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
+        if (player.y === obstacle.y - playerHeight && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
             return true;
         }
     }
