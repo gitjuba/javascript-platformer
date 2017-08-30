@@ -7,7 +7,7 @@ A (for now) minimalistic platformer written in JavaScript.
 * ~~Basic jumping mechanics~~
 * ~~Obstacle collision detection~~
 * ~~Death; restart level~~
-* Level goal
+* ~~Level goal~~
 * ~~Multiple obstacles~~
 * Multiple levels; level advancement
 

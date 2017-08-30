@@ -41,7 +41,7 @@ const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
-const startLocation = { x: 20, y: 20 };
+const startLocation = { x: 50, y: 50 };
 
 const resetPlayer = () => ({
     alive: true,
@@ -59,9 +59,14 @@ const resetPlayer = () => ({
 let player = resetPlayer();
 
 const obstacles = [
-    {x: 200, y: 600, w: 100, h: 10},
-    {x: 400, y: 600, w: 100, h: 10}
+    {x: 50, y: 650, w: 300, h: 10},
+    {x: 400, y: 550, w: 100, h: 10},
+    {x: 550, y: 450, w: 300, h: 10},
+    {x: 900, y: 350, w: 100, h: 10},
+    {x: 1050, y: 250, w: 100, h: 10}
 ];
+
+const goal = {x: 1095, y: 150, w: 10, h:10};
 
 const isDead = () => {
     return player.y > canvasHeight;
@@ -79,6 +84,7 @@ const onSurface = () => {
 
 // Calculate the overlap of the player and an obstacle. Push the player back.
 const handleCollision = obstacle => {
+    let colliding = false;
     let overlapX = 0;
     let overlapY = 0;
     const overlapLeft = player.x + playerWidth - obstacle.x;
@@ -92,6 +98,7 @@ const handleCollision = obstacle => {
         const overlapTop = player.y + playerHeight - obstacle.y;
         const overlapBottom = obstacle.y + obstacle.h - player.y;
         if (overlapTop > 0 && overlapBottom > 0) {
+            colliding = true;
             if (overlapTop > overlapBottom) {
                 overlapY = overlapBottom;
             } else {
@@ -106,6 +113,7 @@ const handleCollision = obstacle => {
             }
         }
     }
+    return colliding;
 };
 
 const update = () => {
@@ -176,6 +184,11 @@ const update = () => {
         player.y += player.vy;
     }
 
+    // Check if goal is reached.
+    if (handleCollision(goal)) {
+        player = resetPlayer();
+    }
+
     // Detect collisions.
     obstacles.forEach(obstacle => handleCollision(obstacle));
 
@@ -193,6 +206,10 @@ const update = () => {
     // Draw obstacles.
     ctx.fillStyle = 'black';
     obstacles.forEach(obstacle => ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h));
+
+    // Draw goal
+    ctx.fillStyle = 'red';
+    ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
 
     // Draw player.
     ctx.fillStyle = 'blue';
