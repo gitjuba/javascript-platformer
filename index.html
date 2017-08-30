@@ -34,6 +34,7 @@ const playerWidth = 10;
 const playerHeight = 10;
 
 const playerMaxSpeedHorizontal = 10;
+const turboMultiplier = 2;
 const playerMaxSpeedVertical = 10;
 const playerAccHorizontalGround = 2;
 const playerAccHorizontalAirForced = 0.5;
@@ -53,7 +54,8 @@ const resetPlayer = () => ({
     right: false,
     up: false,
     newJump: true,
-    jumpDuration: 0
+    jumpDuration: 0,
+    turbo: false
 });
 
 let player = resetPlayer();
@@ -119,23 +121,24 @@ const handleCollision = obstacle => {
 const update = () => {
     // Handle input. Player input changes the velocity.
     const isOnSurface = onSurface();
+    const turbo = player.turbo ? turboMultiplier : 1;
     if (player.left) {
         if (isOnSurface) {
-            player.vx -= playerAccHorizontalGround;
+            player.vx -= turbo*playerAccHorizontalGround;
         } else {
-            player.vx -= playerAccHorizontalAirForced;
+            player.vx -= turbo*playerAccHorizontalAirForced;
         }
-        if (player.vx < -playerMaxSpeedHorizontal) {
-            player.vx = -playerMaxSpeedHorizontal;
+        if (player.vx < -turbo*playerMaxSpeedHorizontal) {
+            player.vx = -turbo*playerMaxSpeedHorizontal;
         }
     } else if (player.right) {
         if (isOnSurface) {
-            player.vx += playerAccHorizontalGround;
+            player.vx += turbo*playerAccHorizontalGround;
         } else {
-            player.vx += playerAccHorizontalAirForced;
+            player.vx += turbo*playerAccHorizontalAirForced;
         }
-        if (player.vx > playerMaxSpeedHorizontal) {
-            player.vx = playerMaxSpeedHorizontal;
+        if (player.vx > turbo*playerMaxSpeedHorizontal) {
+            player.vx = turbo*playerMaxSpeedHorizontal;
         }
     } else {
         if (isOnSurface) {
@@ -227,13 +230,17 @@ window.addEventListener('keydown', e => {
             player.left = true;
             break;
         case 32:
-            // up
+            // space bar
             player.up = true;
             break;
         case 39:
             // right
             player.left = false;
             player.right = true;
+            break;
+        case 16:
+            // shift
+            player.turbo = true;
             break;
         default:
             break;
@@ -243,17 +250,17 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => {
     switch (e.keyCode) {
         case 37:
-            // left
             player.left = false;
             break;
         case 32:
-            // up
             player.up = false;
             player.newJump = true;
             break;
         case 39:
-            // right
             player.right = false;
+            break;
+        case 16:
+            player.turbo = false;
             break;
         default:
             break;
