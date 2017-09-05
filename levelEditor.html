@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<canvas id="editorCanvas"></canvas>
+<script type="text/javascript" src="CollisionDetection.js"></script>
+<script type="text/javascript">
+const canvasWidth = 1280;
+const canvasHeight = 720;
+const canvas = document.getElementById('editorCanvas');
+canvas.width = canvasWidth;
+canvas.height = canvasHeight;
+
+const ctx = canvas.getContext('2d');
+const rect = canvas.getBoundingClientRect();
+const root = document.documentElement;
+
+const PLAYER_W = 20;
+const PLAYER_H = 20;
+
+const Objects = {
+    NONE: 0,
+    PLAYER: 1,
+    GOAL: 2,
+    OBSTACLE: 3
+};
+
+let selectedObject = undefined;
+let newObjectType = Objects.OBSTACLE;
+let newObject = undefined;
+let mouseX, mouseY, dragOffsetX, dragOffsetY;
+
+const levelObjects = [
+    { type: Objects.OBSTACLE, x: 100, y: 100, w: 100, h: 10 },
+    { type: Objects.OBSTACLE, x: 400, y: 200, w: 10, h: 100 }
+];
+
+const getObjectUnderCursor = () => {
+    const objectsUnderCursor = [];
+    for (let i = 0; i < levelObjects.length; i++) {
+        const object = levelObjects[i];
+        if (collidePointRectangle(mouseX, mouseY, object.x, object.y, object.w, object.h)) {
+            objectsUnderCursor.push(i);
+        }
+    }
+    if (objectsUnderCursor.length > 0) {
+        // In the case of several overlapping objects, return the one with largest index, i.e. the one added most recently.
+        return Math.max(...objectsUnderCursor);
+    } else {
+        return undefined;
+    }
+};
+
+const removeObjectOfType = objType => {
+    const ind = levelObjects.findIndex(obj => obj.type === objType);
+    if (ind >= 0) {
+        levelObjects.splice(ind, 1);
+    }
+};
+
+window.addEventListener('mousemove', e => {
+    mouseX = e.clientX - rect.left - root.scrollLeft;
+    mouseY = e.clientY - rect.top - root.scrollTop;
+    if (selectedObject !== undefined) {
+        levelObjects[selectedObject].x = mouseX - dragOffsetX;
+        levelObjects[selectedObject].y = mouseY - dragOffsetY;
+    } else if (newObject !== undefined) {
+        newObject.w = mouseX - newObject.x;
+        newObject.h = mouseY - newObject.y;
+    }
+});
+
+window.addEventListener('mousedown', e => {
+    selectedObject = getObjectUnderCursor();
+    if (selectedObject !== undefined) {
+        dragOffsetX = mouseX - levelObjects[selectedObject].x;
+        dragOffsetY = mouseY - levelObjects[selectedObject].y;
+    } else {
+        if (newObjectType !== Objects.OBSTACLE) {
+            // There can be only one start and one goal.
+            removeObjectOfType(newObjectType);
+        }
+        const newObjWidth = newObjectType === Objects.PLAYER ? PLAYER_W : 0;
+        const newObjHeight = newObjectType === Objects.PLAYER ? PLAYER_H : 0;
+        newObject = { type: newObjectType, x: mouseX, y: mouseY, w: newObjWidth, h: newObjHeight };
+    }
+});
+
+window.addEventListener('mouseup', e => {
+    selectedObject = undefined;
+    if (newObject !== undefined) {
+        levelObjects.push(newObject);
+        newObject = undefined;
+    }
+});
+
+window.addEventListener('keydown', e => {
+    switch (e.keyCode) {
+        case 83: // 's'
+            newObjectType = Objects.PLAYER;
+            break;
+        case 71: // 'g'
+            newObjectType = Objects.GOAL;
+            break;
+        case 79: // 'o'
+            newObjectType = Objects.OBSTACLE;
+            break;
+        case 80:
+            console.log(JSON.stringify(levelObjects));
+            break;
+        default:
+            console.log(e.keyCode);
+            break;
+    }
+});
+
+const getFillStyle = objType => {
+    switch (objType) {
+        case Objects.OBSTACLE:
+            return 'black';
+            break;
+        case Objects.PLAYER:
+            return 'blue';
+            break;
+        case Objects.GOAL:
+            return 'red';
+            break;
+    }
+};
+
+const update = () => {
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillText(`(${mouseX}, ${mouseY})`, mouseX, mouseY);
+    levelObjects.forEach(object => {
+        ctx.fillStyle = getFillStyle(object.type);
+        ctx.fillRect(object.x, object.y, object.w, object.h);
+    });
+    if (newObject !== undefined) {
+        ctx.fillStyle = getFillStyle(newObject.type);
+        ctx.fillRect(newObject.x, newObject.y, newObject.w, newObject.h);
+    }
+    window.requestAnimationFrame(update);
+};
+
+update();
+
+</script>
+</body>
+</html>
