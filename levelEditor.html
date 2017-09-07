@@ -18,8 +18,9 @@ const ctx = canvas.getContext('2d');
 const rect = canvas.getBoundingClientRect();
 const root = document.documentElement;
 
-const PLAYER_W = 20;
-const PLAYER_H = 20;
+const GRID_SIZE = 10;
+const PLAYER_W = 2*GRID_SIZE;
+const PLAYER_H = 2*GRID_SIZE;
 
 const Objects = {
     NONE: 0,
@@ -33,10 +34,7 @@ let newObjectType = Objects.OBSTACLE;
 let newObject = undefined;
 let mouseX, mouseY, dragOffsetX, dragOffsetY;
 
-const levelObjects = [
-    { type: Objects.OBSTACLE, x: 100, y: 100, w: 100, h: 10 },
-    { type: Objects.OBSTACLE, x: 400, y: 200, w: 10, h: 100 }
-];
+const levelObjects = [];
 
 const getObjectUnderCursor = () => {
     const objectsUnderCursor = [];
@@ -68,12 +66,17 @@ window.addEventListener('mousemove', e => {
         levelObjects[selectedObject].x = mouseX - dragOffsetX;
         levelObjects[selectedObject].y = mouseY - dragOffsetY;
     } else if (newObject !== undefined) {
-        newObject.w = mouseX - newObject.x;
-        newObject.h = mouseY - newObject.y;
+        if (newObjectType === Objects.OBSTACLE) {
+            newObject.w = GRID_SIZE*Math.round((mouseX - newObject.x)/GRID_SIZE);
+            newObject.h = GRID_SIZE*Math.round((mouseY - newObject.y)/GRID_SIZE);
+        } else {
+            newObject.x = GRID_SIZE*Math.round(mouseX/GRID_SIZE);
+            newObject.y = GRID_SIZE*Math.round(mouseY/GRID_SIZE);
+        }
     }
 });
 
-window.addEventListener('mousedown', e => {
+window.addEventListener('mousedown', () => {
     selectedObject = getObjectUnderCursor();
     if (selectedObject !== undefined) {
         dragOffsetX = mouseX - levelObjects[selectedObject].x;
@@ -83,16 +86,39 @@ window.addEventListener('mousedown', e => {
             // There can be only one start and one goal.
             removeObjectOfType(newObjectType);
         }
-        const newObjWidth = newObjectType === Objects.PLAYER ? PLAYER_W : 0;
-        const newObjHeight = newObjectType === Objects.PLAYER ? PLAYER_H : 0;
-        newObject = { type: newObjectType, x: mouseX, y: mouseY, w: newObjWidth, h: newObjHeight };
+        const newObjWidth = newObjectType === Objects.OBSTACLE ? 0 : PLAYER_W;
+        const newObjHeight = newObjectType === Objects.OBSTACLE ? 0 : PLAYER_H;
+        newObject = {
+            type: newObjectType,
+            x: GRID_SIZE*Math.round(mouseX/GRID_SIZE),
+            y: GRID_SIZE*Math.round(mouseY/GRID_SIZE),
+            w: newObjWidth,
+            h: newObjHeight
+        };
     }
 });
+
+const checkDimensions = obj => {
+    if (obj.w === 0 || obj.h === 0) {
+        return false;
+    }
+    if (obj.w < 0) {
+        obj.x += obj.w;
+        obj.w *= -1;
+    }
+    if (obj.h < 0) {
+        obj.y += obj.h;
+        obj.h *= -1;
+    }
+    return true;
+};
 
 window.addEventListener('mouseup', e => {
     selectedObject = undefined;
     if (newObject !== undefined) {
-        levelObjects.push(newObject);
+        if (checkDimensions(newObject)) {
+            levelObjects.push(newObject);
+        }
         newObject = undefined;
     }
 });
