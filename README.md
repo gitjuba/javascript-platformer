@@ -11,12 +11,13 @@ A (for now) minimalistic platformer written in JavaScript.
 * ~~Multiple obstacles~~
 * ~~Turbo/run button~~
 * ~~Multiple levels; level advancement~~
-* Level editor
+* ~~Rudimentary level editor~~
 * Start and end screens
 * Finite number of lives; game over
 
 ## Goal II
 
+* Integrated level editor
 * Wall jumps
 * Double jumps
 * Level timing
