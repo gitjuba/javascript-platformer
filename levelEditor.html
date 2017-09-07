@@ -29,6 +29,7 @@ const Objects = {
     OBSTACLE: 3
 };
 
+let deleteObject = false;
 let selectedObject = undefined;
 let newObjectType = Objects.OBSTACLE;
 let newObject = undefined;
@@ -79,8 +80,13 @@ window.addEventListener('mousemove', e => {
 window.addEventListener('mousedown', () => {
     selectedObject = getObjectUnderCursor();
     if (selectedObject !== undefined) {
-        dragOffsetX = mouseX - levelObjects[selectedObject].x;
-        dragOffsetY = mouseY - levelObjects[selectedObject].y;
+        if (deleteObject) {
+            levelObjects.splice(Number(selectedObject), 1);
+            selectedObject = undefined;
+        } else {
+            dragOffsetX = mouseX - levelObjects[selectedObject].x;
+            dragOffsetY = mouseY - levelObjects[selectedObject].y;
+        }
     } else {
         if (newObjectType !== Objects.OBSTACLE) {
             // There can be only one start and one goal.
@@ -134,13 +140,26 @@ window.addEventListener('keydown', e => {
         case 79: // 'o'
             newObjectType = Objects.OBSTACLE;
             break;
-        case 80:
+        case 80: // 'p'
             console.log(JSON.stringify(levelObjects));
+            break;
+        case 16: // shift
+            deleteObject = true;
             break;
         default:
             console.log(e.keyCode);
             break;
     }
+});
+
+window.addEventListener('keyup', e => {
+   switch (e.keyCode) {
+       case 16:
+           deleteObject = false;
+           break;
+       default:
+           break;
+   }
 });
 
 const getFillStyle = objType => {
