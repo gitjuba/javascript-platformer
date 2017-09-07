@@ -53,6 +53,8 @@ const getObjectUnderCursor = () => {
     }
 };
 
+const snapToGrid = val => GRID_SIZE*Math.round(val/GRID_SIZE);
+
 const removeObjectOfType = objType => {
     const ind = levelObjects.findIndex(obj => obj.type === objType);
     if (ind >= 0) {
@@ -64,15 +66,15 @@ window.addEventListener('mousemove', e => {
     mouseX = e.clientX - rect.left - root.scrollLeft;
     mouseY = e.clientY - rect.top - root.scrollTop;
     if (selectedObject !== undefined) {
-        levelObjects[selectedObject].x = mouseX - dragOffsetX;
-        levelObjects[selectedObject].y = mouseY - dragOffsetY;
+        levelObjects[selectedObject].x = snapToGrid(mouseX - dragOffsetX);
+        levelObjects[selectedObject].y = snapToGrid(mouseY - dragOffsetY);
     } else if (newObject !== undefined) {
         if (newObjectType === Objects.OBSTACLE) {
-            newObject.w = GRID_SIZE*Math.round((mouseX - newObject.x)/GRID_SIZE);
-            newObject.h = GRID_SIZE*Math.round((mouseY - newObject.y)/GRID_SIZE);
+            newObject.w = snapToGrid(mouseX - newObject.x);
+            newObject.h = snapToGrid(mouseY - newObject.y);
         } else {
-            newObject.x = GRID_SIZE*Math.round(mouseX/GRID_SIZE);
-            newObject.y = GRID_SIZE*Math.round(mouseY/GRID_SIZE);
+            newObject.x = snapToGrid(mouseX);
+            newObject.y = snapToGrid(mouseY);
         }
     }
 });
@@ -96,8 +98,8 @@ window.addEventListener('mousedown', () => {
         const newObjHeight = newObjectType === Objects.OBSTACLE ? 0 : PLAYER_H;
         newObject = {
             type: newObjectType,
-            x: GRID_SIZE*Math.round(mouseX/GRID_SIZE),
-            y: GRID_SIZE*Math.round(mouseY/GRID_SIZE),
+            x: snapToGrid(mouseX),
+            y: snapToGrid(mouseY),
             w: newObjWidth,
             h: newObjHeight
         };
