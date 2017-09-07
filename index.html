@@ -14,14 +14,13 @@
 
 <canvas id="mainCanvas"></canvas>
 
+<script type="text/javascript" src="Constants.js"></script>
 <script type="text/javascript">
-const canvasWidth = 1280;
-const canvasHeight = 720;
 const canvas = document.getElementById('mainCanvas');
 // Note: canvas.width is the actual width of the element; canvas.style.width is its appearance.
 // So if they differ, shapes appear distorted.
-canvas.width = canvasWidth;
-canvas.height = canvasHeight;
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
 
 const ctx = canvas.getContext('2d');
 
@@ -29,9 +28,6 @@ const ctx = canvas.getContext('2d');
 const pixPerMet = 5;
 const framesPerSec = 60;
 const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
-
-const playerWidth = 20;
-const playerHeight = 20;
 
 const turboMultiplier = 1.5;
 const playerMaxSpeedHorizontal = 7;
@@ -107,13 +103,13 @@ const resetPlayer = levelInd => ({
 let player = resetPlayer(0);
 
 const isDead = () => {
-    return player.y > canvasHeight;
+    return player.y > CANVAS_HEIGHT;
 };
 
 const onSurface = lvl => {
     // Check whether the player is in a position where they can execute a jump, i.e. on top of an obstacle.
     for (const obstacle of lvl.obstacles) {
-        if (player.y === obstacle.y - playerHeight && player.x + playerWidth >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
+        if (player.y === obstacle.y - PLAYER_H && player.x + PLAYER_W >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
             return true;
         }
     }
@@ -126,7 +122,7 @@ const handleCollision = obstacle => {
     let colliding = false;
     let overlapX = 0;
     let overlapY = 0;
-    const overlapLeft = player.x + playerWidth - obstacle.x;
+    const overlapLeft = player.x + PLAYER_W - obstacle.x;
     const overlapRight = obstacle.x + obstacle.w - player.x;
     if (overlapLeft > 0 && overlapRight > 0) {
         if (overlapLeft > overlapRight) {
@@ -134,7 +130,7 @@ const handleCollision = obstacle => {
         } else {
             overlapX = -overlapLeft;
         }
-        const overlapTop = player.y + playerHeight - obstacle.y;
+        const overlapTop = player.y + PLAYER_H - obstacle.y;
         const overlapBottom = obstacle.y + obstacle.h - player.y;
         if (overlapTop > 0 && overlapBottom > 0) {
             colliding = true;
@@ -242,7 +238,7 @@ const update = () => {
     //
 
     // Clear previous frame.
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     // Draw obstacles.
     ctx.fillStyle = 'black';
@@ -254,7 +250,7 @@ const update = () => {
 
     // Draw player.
     ctx.fillStyle = 'blue';
-    ctx.fillRect(player.x, player.y, playerWidth, playerHeight);
+    ctx.fillRect(player.x, player.y, PLAYER_W, PLAYER_H);
 
     window.requestAnimationFrame(update);
 };

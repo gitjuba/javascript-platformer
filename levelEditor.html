@@ -6,28 +6,16 @@
 </head>
 <body>
 <canvas id="editorCanvas"></canvas>
+<script type="text/javascript" src="Constants.js"></script>
 <script type="text/javascript" src="CollisionDetection.js"></script>
 <script type="text/javascript">
-const canvasWidth = 1280;
-const canvasHeight = 720;
 const canvas = document.getElementById('editorCanvas');
-canvas.width = canvasWidth;
-canvas.height = canvasHeight;
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
 
 const ctx = canvas.getContext('2d');
 const rect = canvas.getBoundingClientRect();
 const root = document.documentElement;
-
-const GRID_SIZE = 10;
-const PLAYER_W = 2*GRID_SIZE;
-const PLAYER_H = 2*GRID_SIZE;
-
-const Objects = {
-    NONE: 0,
-    PLAYER: 1,
-    GOAL: 2,
-    OBSTACLE: 3
-};
 
 let deleteObject = false;
 let selectedObject = undefined;
@@ -179,7 +167,7 @@ const getFillStyle = objType => {
 };
 
 const update = () => {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.fillText(`(${mouseX}, ${mouseY})`, mouseX, mouseY);
     levelObjects.forEach(object => {
         ctx.fillStyle = getFillStyle(object.type);
