@@ -139,7 +139,7 @@ window.addEventListener('keydown', e => {
             newObjectType = Objects.OBSTACLE;
             break;
         case 80: // 'p'
-            console.log(JSON.stringify(levelObjects));
+            console.log(JSON.stringify(levelObjects).replace(/"/g, ''));
             break;
         case 16: // shift
             deleteObject = true;
