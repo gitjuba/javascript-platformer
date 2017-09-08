@@ -85,20 +85,23 @@ const levels = [
     }
 ];
 
-const resetPlayer = levelInd => ({
-    levelProgress: levelInd,
-    alive: true,
-    x: levels[levelInd].startLocation.x,
-    y: levels[levelInd].startLocation.y,
-    vx: 0,
-    vy: 0,
-    left: false,
-    right: false,
-    up: false,
-    newJump: true,
-    jumpDuration: 0,
-    turbo: false
-});
+const resetPlayer = levelInd => {
+    const startObj = levels[levelInd].find(obj => obj.type === Objects.PLAYER);
+    return {
+        levelProgress: levelInd,
+        alive: true,
+        x: startObj.x,
+        y: startObj.y,
+        vx: 0,
+        vy: 0,
+        left: false,
+        right: false,
+        up: false,
+        newJump: true,
+        jumpDuration: 0,
+        turbo: false
+    };
+};
 
 let player = resetPlayer(0);
 
@@ -106,9 +109,9 @@ const isDead = () => {
     return player.y > CANVAS_HEIGHT;
 };
 
-const onSurface = lvl => {
+const onSurface = levelObjects => {
     // Check whether the player is in a position where they can execute a jump, i.e. on top of an obstacle.
-    for (const obstacle of lvl.obstacles) {
+    for (const obstacle of levelObjects.filter(obj => obj.type === Objects.OBSTACLE)) {
         if (player.y === obstacle.y - PLAYER_H && player.x + PLAYER_W >= obstacle.x && player.x <= obstacle.x + obstacle.w) {
             return true;
         }
@@ -153,8 +156,8 @@ const handleCollision = obstacle => {
 
 const update = () => {
     // Handle input. Player input changes the velocity.
-    const level = levels[player.levelProgress];
-    const isOnSurface = onSurface(level);
+    const levelObjects = levels[player.levelProgress];
+    const isOnSurface = onSurface(levelObjects);
     const turbo = player.turbo ? turboMultiplier : 1;
     if (player.left) {
         if (isOnSurface) {
@@ -222,12 +225,13 @@ const update = () => {
     }
 
     // Check if goal is reached.
-    if (handleCollision(level.goal)) {
+    const goal = levelObjects.find(obj => obj.type === Objects.GOAL);
+    if (handleCollision(goal)) {
         player = resetPlayer(player.levelProgress === levels.length - 1 ? 0 : player.levelProgress + 1);
     }
 
     // Detect collisions.
-    level.obstacles.forEach(obstacle => handleCollision(obstacle));
+    levelObjects.filter(obj => obj.type === Objects.OBSTACLE).forEach(obstacle => handleCollision(obstacle));
 
     if (isDead()) {
         player = resetPlayer(player.levelProgress);
@@ -242,11 +246,13 @@ const update = () => {
 
     // Draw obstacles.
     ctx.fillStyle = 'black';
-    level.obstacles.forEach(obstacle => ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h));
+    levelObjects
+        .filter(obj => obj.type === Objects.OBSTACLE)
+        .forEach(obstacle => ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h));
 
     // Draw goal
     ctx.fillStyle = 'red';
-    ctx.fillRect(level.goal.x, level.goal.y, level.goal.w, level.goal.h);
+    ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
 
     // Draw player.
     ctx.fillStyle = 'blue';
