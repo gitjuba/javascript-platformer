@@ -223,25 +223,28 @@ const update = () => {
 // Register input.
 window.addEventListener('keydown', e => {
     switch (e.keyCode) {
-        case 37:
-            // left
+        case 37: // left
             player.right = false;
             player.left = true;
             break;
-        case 32:
-            // space bar
+        case 32: // space bar
             player.up = true;
             break;
-        case 39:
-            // right
+        case 39: // right
             player.left = false;
             player.right = true;
             break;
-        case 16:
-            // shift
+        case 16: // shift
             player.turbo = true;
             break;
+        case 78: // 'n' (advance to next level)
+            player = resetPlayer(player.levelProgress === levels.length - 1 ? 0 : player.levelProgress + 1);
+            break;
+        case 80: // 'p' (retreat to previous level)
+            player = resetPlayer(player.levelProgress === 0 ? levels.length - 1 : player.levelProgress - 1);
+            break;
         default:
+            console.log(e.keyCode);
             break;
     }
 });
