@@ -14,6 +14,7 @@
 
 <canvas id="mainCanvas"></canvas>
 
+<script type="text/javascript" src="Levels.js"></script>
 <script type="text/javascript" src="Constants.js"></script>
 <script type="text/javascript">
 const canvas = document.getElementById('mainCanvas');
@@ -37,12 +38,6 @@ const playerAccHorizontalAirForced = 0.5;
 const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
-
-const levels = [
-    [{type:3,x:160,y:540,w:950,h:10},{type:3,x:810,y:430,w:180,h:10},{type:1,x:250,y:460,w:20,h:20},{type:2,x:890,y:360,w:20,h:20}],
-    [{type:3,x:130,y:530,w:230,h:10},{type:3,x:530,y:530,w:230,h:10},{type:3,x:920,y:530,w:230,h:10},{type:1,x:230,y:470,w:20,h:20},{type:2,x:1030,y:470,w:20,h:20}],
-    [{type:3,x:190,y:520,w:240,h:10},{type:3,x:820,y:520,w:230,h:10},{type:1,x:310,y:450,w:20,h:20},{type:2,x:920,y:450,w:20,h:20}]
-];
 
 const resetPlayer = levelInd => {
     const startObj = levels[levelInd].find(obj => obj.type === Objects.PLAYER);
