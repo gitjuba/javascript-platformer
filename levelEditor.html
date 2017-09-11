@@ -174,8 +174,45 @@ const getFillStyle = objType => {
     }
 };
 
+const drawHelperLines = () => {
+    ctx.strokeStyle = 'lightgreen';
+    // divide to quadrants
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(CANVAS_WIDTH/2, 0);
+    ctx.lineTo(CANVAS_WIDTH/2, CANVAS_HEIGHT);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, CANVAS_HEIGHT/2);
+    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT/2);
+    ctx.stroke();
+
+    const nDivsHorizontal = 16;
+    const nDivsVertical = 24;
+    ctx.setLineDash([5, 5]);
+    for (let i = 0; i < nDivsHorizontal; i++) {
+        // vertical lines
+        ctx.beginPath();
+        ctx.moveTo(i * CANVAS_WIDTH / nDivsHorizontal, 0);
+        ctx.lineTo(i * CANVAS_WIDTH / nDivsHorizontal, CANVAS_HEIGHT);
+        ctx.stroke();
+    }
+
+    for (let i = 0; i < nDivsVertical; i++) {
+        // horizontal lines
+        ctx.beginPath();
+        ctx.moveTo(0, i*CANVAS_HEIGHT/nDivsVertical);
+        ctx.lineTo(CANVAS_WIDTH, i*CANVAS_HEIGHT/nDivsVertical);
+        ctx.stroke();
+    }
+    ctx.setLineDash([]);
+};
+
 const update = () => {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    drawHelperLines();
+    ctx.fillStyle = 'purple';
     ctx.fillText(`(${mouseX}, ${mouseY})`, mouseX, mouseY);
     levelObjects.forEach(object => {
         ctx.fillStyle = getFillStyle(object.type);
