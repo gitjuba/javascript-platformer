@@ -119,11 +119,13 @@ const handleCollision = obstacle => {
                   // velocity towards top-left
                   player.vy = 0;
                   player.y += aB;
+                  player.jumpDuration = maxJumpDuration;
                 } else if (player.vx > 0 && player.vy < 0) {
                   // velocity direction to top-right, i.e. towards the obstacle
                   if (aL > aB) {
                     player.vy = 0;
                     player.y += aB;
+                    player.jumpDuration = maxJumpDuration;
                   } else {
                     player.vx = 0;
                     player.x -= aL;
@@ -170,11 +172,13 @@ const handleCollision = obstacle => {
                   // velocity towards top-right
                   player.vy = 0;
                   player.y += aB;
+                  player.jumpDuration = maxJumpDuration;
                 } else if (player.vx < 0 && player.vy < 0) {
                   // velocity direction to top-left, i.e. towards the obstacle
                   if (aR > aB) {
                     player.vy = 0;
                     player.y += aB;
+                    player.jumpDuration = maxJumpDuration;
                   } else {
                     player.vx = 0;
                     player.x += aR;
@@ -197,6 +201,7 @@ const handleCollision = obstacle => {
                 // direct bottom
                 player.vy = 0;
                 player.y += aB;
+                player.jumpDuration = maxJumpDuration;
               }
             }
         }
