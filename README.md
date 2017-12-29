@@ -10,7 +10,7 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 * ~~Level goal~~
 * ~~Multiple obstacles~~
 * ~~Multiple levels; level advancement~~
-* ~~Rudimentary level editor~~
+* Integrated level editor
 * Around 20 decent levels
 * Start and end screens
 * Finite number of lives; game over
@@ -18,7 +18,6 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 ## Goal II
 
 * Unit tests
-* Integrated level editor
 * Wall jumps
 * Double jumps
 * Turbo/run button
