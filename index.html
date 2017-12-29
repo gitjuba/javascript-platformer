@@ -16,6 +16,7 @@
 
 <script type="text/javascript" src="Levels.js"></script>
 <script type="text/javascript" src="Constants.js"></script>
+<script type="text/javascript" src="CollisionDetection.js"></script>
 <script type="text/javascript">
 const canvas = document.getElementById('mainCanvas');
 // Note: canvas.width is the actual width of the element; canvas.style.width is its appearance.
@@ -43,6 +44,8 @@ const resetPlayer = levelInd => {
     return {
         levelProgress: levelInd,
         alive: true,
+        w: PLAYER_W,
+        h: PLAYER_H,
         x: startObj.x,
         y: startObj.y,
         vx: 0,
@@ -70,142 +73,6 @@ const onSurface = levelObjects => {
         }
     }
     return false;
-};
-
-// TODO: Move to CollisionDetection.js
-// Calculate the overlap of the player and an obstacle. Push the player back.
-const handleCollision = obstacle => {
-    let colliding = false;
-    const aL = player.x + PLAYER_W - obstacle.x;
-    const aR = obstacle.x + obstacle.w - player.x;
-    if (aL > 0 && aR > 0) {
-        const aT = player.y + PLAYER_H - obstacle.y;
-        const aB = obstacle.y + obstacle.h - player.y;
-        if (aT > 0 && aB > 0) {
-            colliding = true;
-
-            if (aL < PLAYER_W && PLAYER_W < aR) {
-              // left collision
-              if (aT < PLAYER_H && PLAYER_H < aB) {
-                // top-left
-                if (player.vx >= 0 && player.vy <= 0) {
-                  // player velocity towards top-right
-                  player.vx = 0;
-                  player.x -= aL;
-                } else if (player.vx <= 0 && player.vy >= 0) {
-                  // velocity towards bottom-left
-                  player.vy = 0;
-                  player.y -= aT;
-                } else if (player.vx > 0 && player.vy > 0) {
-                  // velocity direction to bottom-right, i.e. towards the obstacle
-                  if (aL > aT) {
-                    player.vy = 0;
-                    player.y -= aT;
-                  } else {
-                    player.vx = 0;
-                    player.x -= aL;
-                  }
-                } else {
-                  console.log('Corner collision with velocity pointed away from obstacle!')
-                }
-              } else if (aB < PLAYER_H && PLAYER_H < aT) {
-                // bottom-left
-                if (player.vx >= 0 && player.vy >= 0) {
-                  // player velocity towards bottom-right
-                  player.vx = 0;
-                  player.x -= aL;
-                } else if (player.vx <= 0 && player.vy <= 0) {
-                  // velocity towards top-left
-                  player.vy = 0;
-                  player.y += aB;
-                  player.jumpDuration = maxJumpDuration;
-                } else if (player.vx > 0 && player.vy < 0) {
-                  // velocity direction to top-right, i.e. towards the obstacle
-                  if (aL > aB) {
-                    player.vy = 0;
-                    player.y += aB;
-                    player.jumpDuration = maxJumpDuration;
-                  } else {
-                    player.vx = 0;
-                    player.x -= aL;
-                  }
-                } else {
-                  console.log('Corner collision with velocity pointed away from obstacle!')
-                }
-              } else {
-                // direct left
-                player.vx = 0;
-                player.x -= aL;
-              }
-            } else if (aR < PLAYER_W && PLAYER_W < aL) {
-              // right collision
-              if (aT < PLAYER_H && PLAYER_H < aB) {
-                // top-right
-                if (player.vx <= 0 && player.vy <= 0) {
-                  // player velocity towards top-left
-                  player.vx = 0;
-                  player.x += aR;
-                } else if (player.vx >= 0 && player.vy >= 0) {
-                  // velocity towards bottom-right
-                  player.vy = 0;
-                  player.y -= aT;
-                } else if (player.vx < 0 && player.vy > 0) {
-                  // velocity direction to bottom-left, i.e. towards the obstacle
-                  if (aR > aT) {
-                    player.vy = 0;
-                    player.y -= aT;
-                  } else {
-                    player.vx = 0;
-                    player.x += aR;
-                  }
-                } else {
-                  console.log('Corner collision with velocity pointed away from obstacle!')
-                }
-              } else if (aB < PLAYER_H && PLAYER_H < aT) {
-                // bottom-right
-                if (player.vx <= 0 && player.vy >= 0) {
-                  // player velocity towards bottom-left
-                  player.vx = 0;
-                  player.x += aR;
-                } else if (player.vx >= 0 && player.vy <= 0) {
-                  // velocity towards top-right
-                  player.vy = 0;
-                  player.y += aB;
-                  player.jumpDuration = maxJumpDuration;
-                } else if (player.vx < 0 && player.vy < 0) {
-                  // velocity direction to top-left, i.e. towards the obstacle
-                  if (aR > aB) {
-                    player.vy = 0;
-                    player.y += aB;
-                    player.jumpDuration = maxJumpDuration;
-                  } else {
-                    player.vx = 0;
-                    player.x += aR;
-                  }
-                } else {
-                  console.log('Corner collision with velocity pointed away from obstacle!')
-                }
-              } else {
-                // direct right
-                player.vx = 0;
-                player.x += aR;
-              }
-            } else {
-              // either a direct top or direct bottom collision
-              if (aT < aB) {
-                // direct top
-                player.vy = 0;
-                player.y -= aT;
-              } else {
-                // direct bottom
-                player.vy = 0;
-                player.y += aB;
-                player.jumpDuration = maxJumpDuration;
-              }
-            }
-        }
-    }
-    return colliding;
 };
 
 const update = () => {
@@ -284,7 +151,18 @@ const update = () => {
     }
 
     // Detect collisions.
-    levelObjects.filter(obj => obj.type === Objects.OBSTACLE).forEach(obstacle => handleCollision(obstacle));
+    levelObjects.filter(obj => obj.type === Objects.OBSTACLE).forEach(obstacle => {
+        const collision = collidePlayerObstacle(player, obstacle);
+        if (collision.isColliding) {
+            player.x += collision.deltaX;
+            player.y += collision.deltaY;
+            player.vx += collision.deltaVx;
+            player.vy += collision.deltaVy;
+            if (collision.resetJump) {
+                player.jumpDuration = maxJumpDuration;
+            }
+        }
+    });
 
     if (isDead()) {
         player = resetPlayer(player.levelProgress);
