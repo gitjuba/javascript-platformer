@@ -323,7 +323,7 @@ window.addEventListener('keydown', e => {
             player.right = false;
             player.left = true;
             break;
-        case 32: // space bar
+        case 38: // up
             player.up = true;
             break;
         case 39: // right
@@ -350,7 +350,7 @@ window.addEventListener('keyup', e => {
         case 37:
             player.left = false;
             break;
-        case 32:
+        case 38:
             player.up = false;
             player.newJump = true;
             break;
