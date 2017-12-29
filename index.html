@@ -30,7 +30,6 @@ const pixPerMet = 5;
 const framesPerSec = 60;
 const gravitationalPull = 9.81*pixPerMet/(framesPerSec^2);
 
-const turboMultiplier = 1.5;
 const playerMaxSpeedHorizontal = 7;
 const playerMaxSpeedVertical = 10;
 const playerAccHorizontalGround = 1.5;
@@ -213,24 +212,23 @@ const update = () => {
     // Handle input. Player input changes the velocity.
     const levelObjects = levels[player.levelProgress];
     const isOnSurface = onSurface(levelObjects);
-    const turbo = player.turbo ? turboMultiplier : 1;
     if (player.left) {
         if (isOnSurface) {
-            player.vx -= turbo*playerAccHorizontalGround;
+            player.vx -= playerAccHorizontalGround;
         } else {
-            player.vx -= turbo*playerAccHorizontalAirForced;
+            player.vx -= playerAccHorizontalAirForced;
         }
-        if (player.vx < -turbo*playerMaxSpeedHorizontal) {
-            player.vx = -turbo*playerMaxSpeedHorizontal;
+        if (player.vx < -playerMaxSpeedHorizontal) {
+            player.vx = -playerMaxSpeedHorizontal;
         }
     } else if (player.right) {
         if (isOnSurface) {
-            player.vx += turbo*playerAccHorizontalGround;
+            player.vx += playerAccHorizontalGround;
         } else {
-            player.vx += turbo*playerAccHorizontalAirForced;
+            player.vx += playerAccHorizontalAirForced;
         }
-        if (player.vx > turbo*playerMaxSpeedHorizontal) {
-            player.vx = turbo*playerMaxSpeedHorizontal;
+        if (player.vx > playerMaxSpeedHorizontal) {
+            player.vx = playerMaxSpeedHorizontal;
         }
     } else {
         if (isOnSurface) {
@@ -330,9 +328,6 @@ window.addEventListener('keydown', e => {
             player.left = false;
             player.right = true;
             break;
-        case 16: // shift
-            player.turbo = true;
-            break;
         case 78: // 'n' (advance to next level)
             player = resetPlayer(player.levelProgress === levels.length - 1 ? 0 : player.levelProgress + 1);
             break;
@@ -356,9 +351,6 @@ window.addEventListener('keyup', e => {
             break;
         case 39:
             player.right = false;
-            break;
-        case 16:
-            player.turbo = false;
             break;
         default:
             break;

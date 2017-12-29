@@ -9,7 +9,6 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 * ~~Death; restart level~~
 * ~~Level goal~~
 * ~~Multiple obstacles~~
-* ~~Turbo/run button~~
 * ~~Multiple levels; level advancement~~
 * ~~Rudimentary level editor~~
 * Around 20 decent levels
@@ -22,6 +21,7 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 * Integrated level editor
 * Wall jumps
 * Double jumps
+* Turbo/run button
 * Deadly obstacles
 * Moving platforms
 * Enemies
