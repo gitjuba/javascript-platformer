@@ -13,7 +13,6 @@ const collidePlayerObstacle = (player, obstacle) => {
         deltaVy: 0,
         resetJump: false
     };
-    let colliding = false;
     const aL = player.x + player.w - obstacle.x;
     const aR = obstacle.x + obstacle.w - player.x;
     if (aL > 0 && aR > 0) {
