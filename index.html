@@ -39,7 +39,7 @@ const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
-let gameState = GameStates.GAME;
+let gameState = GameStates.SPLASH;
 
 const resetPlayer = levelInd => {
     const startObj = levels[levelInd].find(obj => obj.type === Objects.PLAYER);
@@ -78,7 +78,17 @@ const onSurface = levelObjects => {
 };
 
 const updateSplash = () => {
+    const leftMargin = 100;
+    const topMargin = 200;
 
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctx.fillStyle = 'black';
+    ctx.font = '48px serif';
+    ctx.fillText('A platforming game', leftMargin, topMargin);
+    ctx.font = '24px serif';
+    ctx.fillText('arrow keys to control', leftMargin, topMargin + 100);
+    ctx.fillText('space bar to start', leftMargin, topMargin + 130);
 };
 
 const updateGame = () => {
@@ -220,6 +230,15 @@ const update = () => {
 // Register input.
 window.addEventListener('keydown', e => {
     switch (e.keyCode) {
+        case 32: // space bar
+            if (gameState !== GameStates.GAME) {
+                gameState = GameStates.GAME;
+                player = resetPlayer(0);
+            }
+            break;
+        case 27: // esc
+            gameState = GameStates.SPLASH;
+            break;
         case 37: // left
             player.right = false;
             player.left = true;
