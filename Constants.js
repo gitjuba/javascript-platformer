@@ -11,3 +11,9 @@ const Objects = {
     GOAL: 2,
     OBSTACLE: 3
 };
+
+const GameStates = {
+    SPLASH: 0,
+    GAME: 1,
+    EDITOR: 2
+};

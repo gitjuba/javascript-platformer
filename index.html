@@ -39,6 +39,8 @@ const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
+let gameState = GameStates.GAME;
+
 const resetPlayer = levelInd => {
     const startObj = levels[levelInd].find(obj => obj.type === Objects.PLAYER);
     return {
@@ -75,7 +77,11 @@ const onSurface = levelObjects => {
     return false;
 };
 
-const update = () => {
+const updateSplash = () => {
+
+};
+
+const updateGame = () => {
     // Handle input. Player input changes the velocity.
     const levelObjects = levels[player.levelProgress];
     const isOnSurface = onSurface(levelObjects);
@@ -146,7 +152,8 @@ const update = () => {
 
     // Check if goal is reached.
     const goal = levelObjects.find(obj => obj.type === Objects.GOAL);
-    if (handleCollision(goal)) {
+    const goalCollision = collidePlayerObstacle(player, goal);
+    if (goalCollision.isColliding) {
         player = resetPlayer(player.levelProgress === levels.length - 1 ? 0 : player.levelProgress + 1);
     }
 
@@ -188,6 +195,24 @@ const update = () => {
     // Draw player.
     ctx.fillStyle = 'blue';
     ctx.fillRect(player.x, player.y, PLAYER_W, PLAYER_H);
+};
+
+const updateEditor = () => {
+
+};
+
+const update = () => {
+    switch (gameState) {
+        case GameStates.SPLASH:
+            updateSplash();
+            break;
+        case GameStates.GAME:
+            updateGame();
+            break;
+        case GameStates.EDITOR:
+            updateEditor();
+            break;
+    }
 
     window.requestAnimationFrame(update);
 };
