@@ -30,7 +30,8 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 
 ## Goal III and beyond
 
-* GitHub workflow
+* Server component
+* Global best times/high scores list
 * End-to-end tests
 * Sound effects
 * Background music
