@@ -208,7 +208,18 @@ const updateGame = () => {
 };
 
 const updateEditor = () => {
-
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    drawHelperLines();
+    ctx.fillStyle = 'purple';
+    ctx.fillText(`(${mouseX}, ${mouseY})`, mouseX, mouseY);
+    levelObjects.forEach(object => {
+        ctx.fillStyle = getFillStyle(object.type);
+        ctx.fillRect(object.x, object.y, object.w, object.h);
+    });
+    if (newObject !== undefined) {
+        ctx.fillStyle = getFillStyle(newObject.type);
+        ctx.fillRect(newObject.x, newObject.y, newObject.w, newObject.h);
+    }
 };
 
 const update = () => {
