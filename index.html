@@ -17,6 +17,7 @@
 <script type="text/javascript" src="Levels.js"></script>
 <script type="text/javascript" src="Constants.js"></script>
 <script type="text/javascript" src="CollisionDetection.js"></script>
+<script type="text/javascript" src="LevelEditor.js"></script>
 <script type="text/javascript">
 const canvas = document.getElementById('mainCanvas');
 // Note: canvas.width is the actual width of the element; canvas.style.width is its appearance.
@@ -25,6 +26,9 @@ canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 
 const ctx = canvas.getContext('2d');
+
+const rect = canvas.getBoundingClientRect();
+const root = document.documentElement;
 
 // Space is expressed in pixels and time in frames in all kinematic quantities such as speed and acceleration.
 const pixPerMet = 5;
@@ -39,7 +43,9 @@ const playerAccHorizontalAirFree = 0.1;
 const playerAccVertical = 5*gravitationalPull;
 const maxJumpDuration = 10; // When jumping, apply vertical acceleration for at most this many frames.
 
-let gameState = GameStates.SPLASH;
+let gameState;
+
+let levelObjects = [];
 
 const resetPlayer = levelInd => {
     const startObj = levels[levelInd].find(obj => obj.type === Objects.PLAYER);
@@ -93,7 +99,7 @@ const updateSplash = () => {
 
 const updateGame = () => {
     // Handle input. Player input changes the velocity.
-    const levelObjects = levels[player.levelProgress];
+    levelObjects = levels[player.levelProgress];
     const isOnSurface = onSurface(levelObjects);
     if (player.left) {
         if (isOnSurface) {
@@ -216,9 +222,9 @@ const updateEditor = () => {
         ctx.fillStyle = getFillStyle(object.type);
         ctx.fillRect(object.x, object.y, object.w, object.h);
     });
-    if (newObject !== undefined) {
-        ctx.fillStyle = getFillStyle(newObject.type);
-        ctx.fillRect(newObject.x, newObject.y, newObject.w, newObject.h);
+    if (editorState.newObject !== undefined) {
+        ctx.fillStyle = getFillStyle(editorState.newObject.type);
+        ctx.fillRect(editorState.newObject.x, editorState.newObject.y, editorState.newObject.w, editorState.newObject.h);
     }
 };
 
@@ -238,17 +244,66 @@ const update = () => {
     window.requestAnimationFrame(update);
 };
 
-// Register input.
+const gameStateChange = newState => {
+    if (newState === gameState) {
+        return;
+    }
+    let startingLevel = 0;
+    // Remove event listeners of current state
+    if (gameState === GameStates.SPLASH) {
+        window.removeEventListener('keydown', splashHandleKeyDown);
+    }
+    if (gameState === GameStates.GAME) {
+        window.removeEventListener('keydown', gameHandleKeyDown);
+        window.removeEventListener('keyup', gameHandleKeyUp);
+    }
+    if (gameState === GameStates.EDITOR) {
+        window.removeEventListener('mousemove', editorHandleMouseMove);
+        window.removeEventListener('mousedown', editorHandleMouseDown);
+        window.removeEventListener('mouseup', editorHandleMouseUp);
+        window.removeEventListener('keydown', editorHandleKeyDown);
+        window.removeEventListener('keyup', editorHandleKeyUp);
+        startingLevel = player.levelProgress;
+    }
+    // Add new state event listeners
+    if (newState === GameStates.SPLASH) {
+        window.addEventListener('keydown', splashHandleKeyDown);
+    }
+    if (newState === GameStates.GAME) {
+        window.addEventListener('keydown', gameHandleKeyDown);
+        window.addEventListener('keyup', gameHandleKeyUp);
+        player = resetPlayer(startingLevel);
+    }
+    if (newState === GameStates.EDITOR) {
+        window.addEventListener('mousemove', editorHandleMouseMove);
+        window.addEventListener('mousedown', editorHandleMouseDown);
+        window.addEventListener('mouseup', editorHandleMouseUp);
+        window.addEventListener('keydown', editorHandleKeyDown);
+        window.addEventListener('keyup', editorHandleKeyUp);
+        levelObjects = levels[player.levelProgress];
+        startLevelEditor(levelObjects);
+    }
+    gameState = newState;
+};
+
+// Always reset game by pressing Esc.
 window.addEventListener('keydown', e => {
+    if (e.keyCode === 27) { // esc
+        gameStateChange(GameStates.SPLASH);
+    }
+});
+
+const splashHandleKeyDown = e => {
+    if (e.keyCode === 32) {
+        gameStateChange(GameStates.GAME);
+    }
+};
+
+// Register input.
+const gameHandleKeyDown = e => {
     switch (e.keyCode) {
-        case 32: // space bar
-            if (gameState !== GameStates.GAME) {
-                gameState = GameStates.GAME;
-                player = resetPlayer(0);
-            }
-            break;
-        case 27: // esc
-            gameState = GameStates.SPLASH;
+        case 69: // 'e'
+            gameStateChange(GameStates.EDITOR);
             break;
         case 37: // left
             player.right = false;
@@ -271,9 +326,9 @@ window.addEventListener('keydown', e => {
             console.log(e.keyCode);
             break;
     }
-});
+}
 
-window.addEventListener('keyup', e => {
+const gameHandleKeyUp = e => {
     switch (e.keyCode) {
         case 37:
             player.left = false;
@@ -288,7 +343,9 @@ window.addEventListener('keyup', e => {
         default:
             break;
     }
-});
+}
+
+gameStateChange(GameStates.SPLASH);
 
 update();
 

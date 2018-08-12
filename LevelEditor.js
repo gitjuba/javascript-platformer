@@ -1,3 +1,4 @@
+let mouseX, mouseY, dragOffsetX, dragOffsetY;
 
 const editorState = {
     deleteObject: false,
@@ -7,7 +8,7 @@ const editorState = {
     levelObjects: []
 };
 
-const snapToGrid = val => GRID_SIZE*Math.round(val/GRID_SIZE);
+const snapToGrid = val => GRID_SIZE * Math.round(val / GRID_SIZE);
 
 const getObjectUnderCursor = () => {
     const objectsUnderCursor = [];
@@ -22,6 +23,13 @@ const getObjectUnderCursor = () => {
         return Math.max(...objectsUnderCursor);
     } else {
         return undefined;
+    }
+};
+
+const removeObjectOfType = objType => {
+    const ind = levelObjects.findIndex(obj => obj.type === objType);
+    if (ind >= 0) {
+        levelObjects.splice(ind, 1);
     }
 };
 
@@ -40,7 +48,7 @@ const checkDimensions = obj => {
     return true;
 };
 
-const handleMouseMove = e => {
+const editorHandleMouseMove = e => {
     mouseX = e.clientX - rect.left - root.scrollLeft;
     mouseY = e.clientY - rect.top - root.scrollTop;
     if (editorState.selectedObject !== undefined) {
@@ -57,7 +65,7 @@ const handleMouseMove = e => {
     }
 };
 
-const handleMouseDown = () => {
+const editorHandleMouseDown = () => {
     editorState.selectedObject = getObjectUnderCursor();
     if (editorState.selectedObject !== undefined) {
         if (editorState.deleteObject) {
@@ -84,7 +92,7 @@ const handleMouseDown = () => {
     }
 };
 
-const handleMouseUp = () => {
+const editorHandleMouseUp = () => {
     editorState.selectedObject = undefined;
     if (editorState.newObject !== undefined) {
         if (checkDimensions(editorState.newObject)) {
@@ -94,8 +102,11 @@ const handleMouseUp = () => {
     }
 };
 
-const handleKeyDown = (e) => {
+const editorHandleKeyDown = e => {
     switch (e.keyCode) {
+        case 32: // space
+            gameStateChange(GameStates.GAME);
+            break;
         case 83: // 's'
             editorState.newObjectType = Objects.PLAYER;
             break;
@@ -117,7 +128,7 @@ const handleKeyDown = (e) => {
     }
 };
 
-const handleKeyUp = e => {
+const editorHandleKeyUp = e => {
     switch (e.keyCode) {
         case 16:
             editorState.deleteObject = false;
@@ -127,19 +138,54 @@ const handleKeyUp = e => {
     }
 };
 
-const startLevelEditor = (level) => {
-    editorState.levelObjects = level;
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+const drawHelperLines = () => {
+    ctx.strokeStyle = 'lightgreen';
+    // divide to quadrants
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(CANVAS_WIDTH / 2, 0);
+    ctx.lineTo(CANVAS_WIDTH / 2, CANVAS_HEIGHT);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, CANVAS_HEIGHT / 2);
+    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT / 2);
+    ctx.stroke();
+
+    const nDivsHorizontal = 16;
+    const nDivsVertical = 24;
+    ctx.setLineDash([5, 5]);
+    for (let i = 0; i < nDivsHorizontal; i++) {
+        // vertical lines
+        ctx.beginPath();
+        ctx.moveTo(i * CANVAS_WIDTH / nDivsHorizontal, 0);
+        ctx.lineTo(i * CANVAS_WIDTH / nDivsHorizontal, CANVAS_HEIGHT);
+        ctx.stroke();
+    }
+
+    for (let i = 0; i < nDivsVertical; i++) {
+        // horizontal lines
+        ctx.beginPath();
+        ctx.moveTo(0, i * CANVAS_HEIGHT / nDivsVertical);
+        ctx.lineTo(CANVAS_WIDTH, i * CANVAS_HEIGHT / nDivsVertical);
+        ctx.stroke();
+    }
+    ctx.setLineDash([]);
 };
 
-const quitLevelEditor = () => {
-    window.removeEventListener('mousemove', handleMouseMove);
-    window.removeEventListener('mousedown', handleMouseDown);
-    window.removeEventListener('mouseup', handleMouseUp);
-    window.removeEventListener('keydown', handleKeyDown);
-    window.removeEventListener('keyup', handleKeyUp);
+const getFillStyle = objType => {
+    switch (objType) {
+        case Objects.OBSTACLE:
+            return 'black';
+        case Objects.PLAYER:
+            return 'blue';
+        case Objects.GOAL:
+            return 'red';
+    }
 };
+
+const startLevelEditor = level => {
+    editorState.levelObjects = level;
+};
+
+const quitLevelEditor = () => {};
