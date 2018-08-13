@@ -91,7 +91,7 @@ const updateSplash = () => {
 
     ctx.fillStyle = 'black';
     ctx.font = '48px serif';
-    ctx.fillText('A platforming game', leftMargin, topMargin);
+    ctx.fillText('a platforming game', leftMargin, topMargin);
     ctx.font = '24px serif';
     ctx.fillText('arrow keys to control', leftMargin, topMargin + 100);
     ctx.fillText('space bar to start', leftMargin, topMargin + 130);
@@ -218,7 +218,7 @@ const updateEditor = () => {
     drawHelperLines();
     ctx.fillStyle = 'purple';
     ctx.fillText(`(${mouseX}, ${mouseY})`, mouseX, mouseY);
-    levelObjects.forEach(object => {
+    editorState.levelObjects.forEach(object => {
         ctx.fillStyle = getFillStyle(object.type);
         ctx.fillRect(object.x, object.y, object.w, object.h);
     });
@@ -263,7 +263,7 @@ const gameStateChange = newState => {
         window.removeEventListener('mouseup', editorHandleMouseUp);
         window.removeEventListener('keydown', editorHandleKeyDown);
         window.removeEventListener('keyup', editorHandleKeyUp);
-        startingLevel = player.levelProgress;
+        startingLevel = editorState.levelInd;
     }
     // Add new state event listeners
     if (newState === GameStates.SPLASH) {
@@ -281,7 +281,7 @@ const gameStateChange = newState => {
         window.addEventListener('keydown', editorHandleKeyDown);
         window.addEventListener('keyup', editorHandleKeyUp);
         levelObjects = levels[player.levelProgress];
-        startLevelEditor(levelObjects);
+        startLevelEditor(player.levelProgress);
     }
     gameState = newState;
 };

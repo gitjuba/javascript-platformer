@@ -27,9 +27,9 @@ const getObjectUnderCursor = () => {
 };
 
 const removeObjectOfType = objType => {
-    const ind = levelObjects.findIndex(obj => obj.type === objType);
+    const ind = editorState.levelObjects.findIndex(obj => obj.type === objType);
     if (ind >= 0) {
-        levelObjects.splice(ind, 1);
+        editorState.levelObjects.splice(ind, 1);
     }
 };
 
@@ -52,8 +52,8 @@ const editorHandleMouseMove = e => {
     mouseX = e.clientX - rect.left - root.scrollLeft;
     mouseY = e.clientY - rect.top - root.scrollTop;
     if (editorState.selectedObject !== undefined) {
-        levelObjects[editorState.selectedObject].x = snapToGrid(mouseX - dragOffsetX);
-        levelObjects[editorState.selectedObject].y = snapToGrid(mouseY - dragOffsetY);
+        editorState.levelObjects[editorState.selectedObject].x = snapToGrid(mouseX - dragOffsetX);
+        editorState.levelObjects[editorState.selectedObject].y = snapToGrid(mouseY - dragOffsetY);
     } else if (editorState.newObject !== undefined) {
         if (editorState.newObjectType === Objects.OBSTACLE) {
             editorState.newObject.w = snapToGrid(mouseX - editorState.newObject.x);
@@ -69,11 +69,11 @@ const editorHandleMouseDown = () => {
     editorState.selectedObject = getObjectUnderCursor();
     if (editorState.selectedObject !== undefined) {
         if (editorState.deleteObject) {
-            levelObjects.splice(Number(editorState.selectedObject), 1);
+            editorState.levelObjects.splice(Number(editorState.selectedObject), 1);
             editorState.selectedObject = undefined;
         } else {
-            dragOffsetX = mouseX - levelObjects[editorState.selectedObject].x;
-            dragOffsetY = mouseY - levelObjects[editorState.selectedObject].y;
+            dragOffsetX = mouseX - editorState.levelObjects[editorState.selectedObject].x;
+            dragOffsetY = mouseY - editorState.levelObjects[editorState.selectedObject].y;
         }
     } else {
         if (editorState.newObjectType !== Objects.OBSTACLE) {
@@ -96,7 +96,7 @@ const editorHandleMouseUp = () => {
     editorState.selectedObject = undefined;
     if (editorState.newObject !== undefined) {
         if (checkDimensions(editorState.newObject)) {
-            levelObjects.push(editorState.newObject);
+            editorState.levelObjects.push(editorState.newObject);
         }
         editorState.newObject = undefined;
     }
@@ -116,8 +116,16 @@ const editorHandleKeyDown = e => {
         case 79: // 'o'
             editorState.newObjectType = Objects.OBSTACLE;
             break;
+        case 65: // 'a', add new level after current level
+            levels.splice(editorState.levelInd + 1, 0, []);
+            startLevelEditor(editorState.levelInd + 1);
+            break;
+        case 73: // 'i', insert new level before current one
+            levels.splice(editorState.levelInd, 0, []);
+            startLevelEditor(editorState.levelInd);
+            break;
         case 80: // 'p'
-            console.log(JSON.stringify(editorState.levelObjects).replace(/"/g, ''));
+            console.log(JSON.stringify(levels).replace(/"/g, ''));
             break;
         case 16: // shift
             editorState.deleteObject = true;
@@ -184,8 +192,10 @@ const getFillStyle = objType => {
     }
 };
 
-const startLevelEditor = level => {
-    editorState.levelObjects = level;
+const startLevelEditor = levelInd => {
+    editorState.levelInd = levelInd;
+    editorState.levelObjects = levels[levelInd];
+    console.log(`Editing level ${levelInd} of ${levels.length}`);
 };
 
 const quitLevelEditor = () => {};
