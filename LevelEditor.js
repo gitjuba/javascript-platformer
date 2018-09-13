@@ -15,8 +15,8 @@ const snapToGrid = val => GRID_SIZE * Math.round(val / GRID_SIZE);
 
 const getObjectUnderCursor = () => {
   const objectsUnderCursor = [];
-  for (let i = 0; i < levelObjects.length; i++) {
-    const object = levelObjects[i];
+  for (let i = 0; i < editorState.levelObjects.length; i++) {
+    const object = editorState.levelObjects[i];
     if (collidePointRectangle(mouseX, mouseY, object.x, object.y, object.w, object.h)) {
       objectsUnderCursor.push(i);
     }
