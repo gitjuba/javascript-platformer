@@ -127,6 +127,10 @@ const editorHandleKeyDown = e => {
       levels.splice(editorState.levelInd, 0, _.cloneDeep(blankLevel));
       startLevelEditor(editorState.levelInd);
       break;
+    case 69:
+      levels[editorState.levelInd] = _.cloneDeep(blankLevel);
+      startLevelEditor(editorState.levelInd);
+      break;
     case 80: // 'p'
       console.log(JSON.stringify(levels).replace(/"/g, ''));
       break;
