@@ -168,7 +168,7 @@ const drawHelperLines = () => {
   ctx.stroke();
 
   const nDivsHorizontal = 16;
-  const nDivsVertical = 24;
+  const nDivsVertical = 36;
   ctx.setLineDash([5, 5]);
   for (let i = 0; i < nDivsHorizontal; i++) {
     // vertical lines
