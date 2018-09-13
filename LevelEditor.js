@@ -1,5 +1,8 @@
 let mouseX, mouseY, dragOffsetX, dragOffsetY;
 
+// a "blank" level isn't exactly blank
+const blankLevel = [{ type: 2, x: 710, y: 320, w: 20, h: 20 }, { type: 1, x: 550, y: 320, w: 20, h: 20 }, { type: 3, x: 480, y: 380, w: 320, h: 20 }];
+
 const editorState = {
   deleteObject: false,
   selectedObject: undefined,
@@ -117,11 +120,11 @@ const editorHandleKeyDown = e => {
       editorState.newObjectType = Objects.OBSTACLE;
       break;
     case 65: // 'a', add new level after current level
-      levels.splice(editorState.levelInd + 1, 0, []);
+      levels.splice(editorState.levelInd + 1, 0, _.cloneDeep(blankLevel));
       startLevelEditor(editorState.levelInd + 1);
       break;
     case 73: // 'i', insert new level before current one
-      levels.splice(editorState.levelInd, 0, []);
+      levels.splice(editorState.levelInd, 0, _.cloneDeep(blankLevel));
       startLevelEditor(editorState.levelInd);
       break;
     case 80: // 'p'
