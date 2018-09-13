@@ -4,16 +4,7 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 
 ## Goal I
 
-* ~~Basic jumping mechanics~~
-* ~~Obstacle collision detection~~
-* ~~Death; restart level~~
-* ~~Level goal~~
-* ~~Multiple obstacles~~
-* ~~Multiple levels; level advancement~~
-* Integrated level editor
-* Around 20 decent levels
-* Start and end screens
-* Finite number of lives; game over
+See [this GH project](https://github.com/gitjuba/javascript-platformer/projects/5)
 
 ## Goal II
 
