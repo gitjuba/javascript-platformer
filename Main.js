@@ -237,6 +237,14 @@ const updateGame = () => {
     ctx.fillRect(10 + iLife*30, 10, PLAYER_W, PLAYER_H);
     iLife++;
   }
+
+  // Level progress
+  var iLevel = 0;
+  ctx.fillStyle = 'black';
+  for (var lev in _.range(levels.length - player.levelProgress - 1)) {
+    ctx.fillRect(CANVAS_WIDTH - 20 - iLevel*15, 10, 10, 10);
+    iLevel++;
+  }
 };
 
 const updateEditor = () => {
