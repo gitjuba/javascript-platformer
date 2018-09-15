@@ -5,6 +5,8 @@ const GRID_SIZE = 10;
 const PLAYER_W = 2 * GRID_SIZE;
 const PLAYER_H = 2 * GRID_SIZE;
 
+const NUM_LIVES = 3;
+
 const Objects = {
   NONE: 0,
   PLAYER: 1,
@@ -15,5 +17,7 @@ const Objects = {
 const GameStates = {
   SPLASH: 0,
   GAME: 1,
-  EDITOR: 2
+  EDITOR: 2,
+  GAME_OVER: 3,
+  GAME_COMPLETE: 4
 };

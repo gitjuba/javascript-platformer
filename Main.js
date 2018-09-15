@@ -26,11 +26,12 @@ let gameState;
 
 let levelObjects = [];
 
-const resetPlayer = levelInd => {
+const resetPlayer = (levelInd, livesLeft) => {
   const startObj = levels[levelInd].find(obj => obj.type === Objects.PLAYER);
   return {
     levelProgress: levelInd,
     alive: true,
+    livesLeft: livesLeft || NUM_LIVES,
     w: PLAYER_W,
     h: PLAYER_H,
     x: startObj.x,
@@ -46,7 +47,7 @@ const resetPlayer = levelInd => {
   };
 };
 
-let player = resetPlayer(0);
+let player = resetPlayer(0, NUM_LIVES);
 
 const isDead = () => {
   return player.y > CANVAS_HEIGHT;
@@ -78,6 +79,33 @@ const updateSplash = () => {
   ctx.font = '24px serif';
   ctx.fillText('arrow keys to control', leftMargin, topMargin + 100);
   ctx.fillText('space bar to start', leftMargin, topMargin + 130);
+  ctx.fillText('esc to reset', leftMargin, topMargin + 160);
+};
+
+const updateGameOver = () => {
+  const leftMargin = 100;
+  const topMargin = 200;
+
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  ctx.fillStyle = 'black';
+  ctx.font = '48px serif';
+  ctx.fillText('game over', leftMargin, topMargin);
+  ctx.font = '24px serif';
+  ctx.fillText('press space', leftMargin, topMargin + 100);
+};
+
+const updateGameComplete = () => {
+  const leftMargin = 100;
+  const topMargin = 200;
+
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  ctx.fillStyle = 'black';
+  ctx.font = '48px serif';
+  ctx.fillText('congratulations!', leftMargin, topMargin);
+  ctx.font = '24px serif';
+  ctx.fillText('press space', leftMargin, topMargin + 100);
 };
 
 const updateGame = () => {
@@ -153,7 +181,11 @@ const updateGame = () => {
   const goal = levelObjects.find(obj => obj.type === Objects.GOAL);
   const goalCollision = collidePlayerObstacle(player, goal);
   if (goalCollision.isColliding) {
-    player = resetPlayer(player.levelProgress === levels.length - 1 ? 0 : player.levelProgress + 1);
+    if (player.levelProgress === levels.length - 1) {
+      gameStateChange(GameStates.GAME_COMPLETE);
+    } else {
+      player = resetPlayer(player.levelProgress + 1, player.livesLeft);
+    }
   }
 
   // Detect collisions.
@@ -171,7 +203,11 @@ const updateGame = () => {
   });
 
   if (isDead()) {
-    player = resetPlayer(player.levelProgress);
+    if (player.livesLeft === 1) {
+      gameStateChange(GameStates.GAME_OVER);
+    } else {
+      player = resetPlayer(player.levelProgress, player.livesLeft - 1);
+    }
   }
 
   //
@@ -194,6 +230,13 @@ const updateGame = () => {
   // Draw player.
   ctx.fillStyle = 'blue';
   ctx.fillRect(player.x, player.y, PLAYER_W, PLAYER_H);
+
+  // Draw lives left
+  var iLife = 0;
+  for (var life in _.range(player.livesLeft - 1)) {
+    ctx.fillRect(10 + iLife*30, 10, PLAYER_W, PLAYER_H);
+    iLife++;
+  }
 };
 
 const updateEditor = () => {
@@ -222,6 +265,12 @@ const update = () => {
     case GameStates.EDITOR:
       updateEditor();
       break;
+    case GameStates.GAME_OVER:
+      updateGameOver();
+      break;
+    case GameStates.GAME_COMPLETE:
+      updateGameComplete();
+      break;
   }
 
   window.requestAnimationFrame(update);
@@ -235,6 +284,9 @@ const gameStateChange = newState => {
   // Remove event listeners of current state
   if (gameState === GameStates.SPLASH) {
     window.removeEventListener('keydown', splashHandleKeyDown);
+  }
+  if ([GameStates.GAME_OVER, GameStates.GAME_COMPLETE].includes(gameState)) {
+    window.removeEventListener('keydown', gameOverHandleKeyDown);
   }
   if (gameState === GameStates.GAME) {
     window.removeEventListener('keydown', gameHandleKeyDown);
@@ -251,6 +303,9 @@ const gameStateChange = newState => {
   // Add new state event listeners
   if (newState === GameStates.SPLASH) {
     window.addEventListener('keydown', splashHandleKeyDown);
+  }
+  if ([GameStates.GAME_OVER, GameStates.GAME_COMPLETE].includes(newState)) {
+    window.addEventListener('keydown', gameOverHandleKeyDown);
   }
   if (newState === GameStates.GAME) {
     window.addEventListener('keydown', gameHandleKeyDown);
@@ -280,6 +335,12 @@ window.addEventListener('keydown', e => {
 const splashHandleKeyDown = e => {
   if (e.keyCode === 32) {
     gameStateChange(GameStates.GAME);
+  }
+};
+
+const gameOverHandleKeyDown = e => {
+  if (e.keyCode === 32) {
+    gameStateChange(GameStates.SPLASH);
   }
 };
 
@@ -329,6 +390,7 @@ const gameHandleKeyUp = e => {
   }
 };
 
+console.log('to splash');
 gameStateChange(GameStates.SPLASH);
 
 update();
