@@ -2,31 +2,16 @@
 
 A (for now extremely) minimalistic platformer written in JavaScript.
 
-## Goal I
+## Gameplay goal I (done)
 
-See [this GH project](https://github.com/gitjuba/javascript-platformer/projects/5)
+A half-decent basic platformer with single-screen levels with simple goals, a start and an end.
 
-## Goal II
+See [this GH project](https://github.com/gitjuba/javascript-platformer/projects/5).
 
-* Unit tests
-* Wall jumps
-* Double jumps
-* Turbo/run button
-* Deadly obstacles
-* Moving platforms
-* Enemies
-* Level timing
-* Level time limits
-* Local best times list
+## Gameplay goal II (in progress)
 
-## Goal III and beyond
+More involved levels, with more stuff to do than just reaching the goal. See [this project](https://github.com/gitjuba/javascript-platformer/projects/7).
 
-* Server component
-* Global best times/high scores list
-* End-to-end tests
-* Sound effects
-* Background music
-* Textures
-* Level replays
-* Several playable characters
-* Scrolling screen
+This requires a more sophisticated level editor, see [this project](https://github.com/gitjuba/javascript-platformer/projects/4).
+
+Also, before the game becomes too complicated, some code clean-up, refactoring and proper abstraction is in order, see [this project](https://github.com/gitjuba/javascript-platformer/projects/5).
