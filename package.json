@@ -1,0 +1,15 @@
+{
+  "name": "javascript-platformer",
+  "description": "An attempt at a decent platforming game",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gitjuba/javascript-platformer.git"
+  },
+  "author": {
+    "name": "Jussi Mattas",
+    "email": "jussi.mattas@gmail.com"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}

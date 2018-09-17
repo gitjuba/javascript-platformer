@@ -2,6 +2,10 @@
 
 A (for now extremely) minimalistic platformer written in JavaScript.
 
+## Usage
+
+Run `npm install` to install dependencies. Then open `dist/index.html` in a browser.
+
 ## Gameplay goal I (done)
 
 A half-decent basic platformer with single-screen levels with simple goals, a start and an end.
