@@ -144,3 +144,8 @@ const collidePlayerObstacle = (player, obstacle) => {
     }
     return collision;
 };
+
+export {
+    collidePointRectangle,
+    collidePlayerObstacle
+};
