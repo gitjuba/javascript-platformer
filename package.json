@@ -9,6 +9,9 @@
     "name": "Jussi Mattas",
     "email": "jussi.mattas@gmail.com"
   },
+  "scripts": {
+    "dev": "webpack --mode development --watch"
+  },
   "dependencies": {
     "lodash": "^4.17.11"
   },
