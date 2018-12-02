@@ -1,30 +1,7 @@
 import _ from 'lodash';
 import levels from './levels';
 import { collidePointRectangle, collidePlayerObstacle } from './collision-detection';
-
-const CANVAS_WIDTH = 1280;
-const CANVAS_HEIGHT = 720;
-
-const GRID_SIZE = 10;
-const PLAYER_W = 2 * GRID_SIZE;
-const PLAYER_H = 2 * GRID_SIZE;
-
-const NUM_LIVES = 3;
-
-const Objects = {
-  NONE: 0,
-  PLAYER: 1,
-  GOAL: 2,
-  OBSTACLE: 3
-};
-
-const GameStates = {
-  SPLASH: 0,
-  GAME: 1,
-  EDITOR: 2,
-  GAME_OVER: 3,
-  GAME_COMPLETE: 4
-};
+import { Layout, Game, Objects, GameStates } from './parameters';
 
 let mouseX, mouseY, dragOffsetX, dragOffsetY;
 
@@ -39,7 +16,7 @@ const editorState = {
   levelObjects: []
 };
 
-const snapToGrid = val => GRID_SIZE * Math.round(val / GRID_SIZE);
+const snapToGrid = val => Layout.GRID_SIZE * Math.round(val / Layout.GRID_SIZE);
 
 const getObjectUnderCursor = () => {
   const objectsUnderCursor = [];
@@ -111,8 +88,8 @@ const editorHandleMouseDown = () => {
       // There can be only one start and one goal.
       removeObjectOfType(editorState.newObjectType);
     }
-    const newObjWidth = editorState.newObjectType === Objects.OBSTACLE ? 0 : PLAYER_W;
-    const newObjHeight = editorState.newObjectType === Objects.OBSTACLE ? 0 : PLAYER_H;
+    const newObjWidth = editorState.newObjectType === Objects.OBSTACLE ? 0 : Layout.PLAYER_W;
+    const newObjHeight = editorState.newObjectType === Objects.OBSTACLE ? 0 : Layout.PLAYER_H;
     editorState.newObject = {
       type: editorState.newObjectType,
       x: snapToGrid(mouseX),
@@ -186,13 +163,13 @@ const drawHelperLines = () => {
   // divide to quadrants
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(CANVAS_WIDTH / 2, 0);
-  ctx.lineTo(CANVAS_WIDTH / 2, CANVAS_HEIGHT);
+  ctx.moveTo(Layout.CANVAS_WIDTH / 2, 0);
+  ctx.lineTo(Layout.CANVAS_WIDTH / 2, Layout.CANVAS_HEIGHT);
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo(0, CANVAS_HEIGHT / 2);
-  ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT / 2);
+  ctx.moveTo(0, Layout.CANVAS_HEIGHT / 2);
+  ctx.lineTo(Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT / 2);
   ctx.stroke();
 
   const nDivsHorizontal = 16;
@@ -201,16 +178,16 @@ const drawHelperLines = () => {
   for (let i = 0; i < nDivsHorizontal; i++) {
     // vertical lines
     ctx.beginPath();
-    ctx.moveTo(i * CANVAS_WIDTH / nDivsHorizontal, 0);
-    ctx.lineTo(i * CANVAS_WIDTH / nDivsHorizontal, CANVAS_HEIGHT);
+    ctx.moveTo(i * Layout.CANVAS_WIDTH / nDivsHorizontal, 0);
+    ctx.lineTo(i * Layout.CANVAS_WIDTH / nDivsHorizontal, Layout.CANVAS_HEIGHT);
     ctx.stroke();
   }
 
   for (let i = 0; i < nDivsVertical; i++) {
     // horizontal lines
     ctx.beginPath();
-    ctx.moveTo(0, i * CANVAS_HEIGHT / nDivsVertical);
-    ctx.lineTo(CANVAS_WIDTH, i * CANVAS_HEIGHT / nDivsVertical);
+    ctx.moveTo(0, i * Layout.CANVAS_HEIGHT / nDivsVertical);
+    ctx.lineTo(Layout.CANVAS_WIDTH, i * Layout.CANVAS_HEIGHT / nDivsVertical);
     ctx.stroke();
   }
   ctx.setLineDash([]);
@@ -238,8 +215,8 @@ const quitLevelEditor = () => {};
 const canvas = document.getElementById('mainCanvas');
 // Note: canvas.width is the actual width of the element; canvas.style.width is its appearance.
 // So if they differ, shapes appear distorted.
-canvas.width = CANVAS_WIDTH;
-canvas.height = CANVAS_HEIGHT;
+canvas.width = Layout.CANVAS_WIDTH;
+canvas.height = Layout.CANVAS_HEIGHT;
 
 const ctx = canvas.getContext('2d');
 
@@ -268,9 +245,9 @@ const resetPlayer = (levelInd, livesLeft) => {
   return {
     levelProgress: levelInd,
     alive: true,
-    livesLeft: livesLeft || NUM_LIVES,
-    w: PLAYER_W,
-    h: PLAYER_H,
+    livesLeft: livesLeft || Layout.NUM_LIVES,
+    w: Layout.PLAYER_W,
+    h: Layout.PLAYER_H,
     x: startObj.x,
     y: startObj.y,
     vx: 0,
@@ -284,18 +261,18 @@ const resetPlayer = (levelInd, livesLeft) => {
   };
 };
 
-let player = resetPlayer(0, NUM_LIVES);
+let player = resetPlayer(0, Layout.NUM_LIVES);
 
 const isDead = () => {
-  return player.y > CANVAS_HEIGHT;
+  return player.y > Layout.CANVAS_HEIGHT;
 };
 
 const onSurface = levelObjects => {
   // Check whether the player is in a position where they can execute a jump, i.e. on top of an obstacle.
   for (const obstacle of levelObjects.filter(obj => obj.type === Objects.OBSTACLE)) {
     if (
-      player.y === obstacle.y - PLAYER_H &&
-      player.x + PLAYER_W >= obstacle.x &&
+      player.y === obstacle.y - Layout.PLAYER_H &&
+      player.x + Layout.PLAYER_W >= obstacle.x &&
       player.x <= obstacle.x + obstacle.w
     ) {
       return true;
@@ -308,7 +285,7 @@ const updateSplash = () => {
   const leftMargin = 100;
   const topMargin = 200;
 
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
 
   ctx.fillStyle = 'black';
   ctx.font = '48px serif';
@@ -323,7 +300,7 @@ const updateGameOver = () => {
   const leftMargin = 100;
   const topMargin = 200;
 
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
 
   ctx.fillStyle = 'black';
   ctx.font = '48px serif';
@@ -336,7 +313,7 @@ const updateGameComplete = () => {
   const leftMargin = 100;
   const topMargin = 200;
 
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
 
   ctx.fillStyle = 'black';
   ctx.font = '48px serif';
@@ -452,7 +429,7 @@ const updateGame = () => {
   //
 
   // Clear previous frame.
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
 
   // Draw obstacles.
   ctx.fillStyle = 'black';
@@ -466,12 +443,12 @@ const updateGame = () => {
 
   // Draw player.
   ctx.fillStyle = 'blue';
-  ctx.fillRect(player.x, player.y, PLAYER_W, PLAYER_H);
+  ctx.fillRect(player.x, player.y, Layout.PLAYER_W, Layout.PLAYER_H);
 
   // Draw lives left
   var iLife = 0;
   for (var life in _.range(player.livesLeft - 1)) {
-    ctx.fillRect(10 + iLife*30, 10, PLAYER_W, PLAYER_H);
+    ctx.fillRect(10 + iLife*30, 10, Layout.PLAYER_W, Layout.PLAYER_H);
     iLife++;
   }
 
@@ -479,13 +456,13 @@ const updateGame = () => {
   var iLevel = 0;
   ctx.fillStyle = 'black';
   for (var lev in _.range(levels.length - player.levelProgress - 1)) {
-    ctx.fillRect(CANVAS_WIDTH - 20 - iLevel*15, 10, 10, 10);
+    ctx.fillRect(Layout.CANVAS_WIDTH - 20 - iLevel*15, 10, 10, 10);
     iLevel++;
   }
 };
 
 const updateEditor = () => {
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
   drawHelperLines();
   ctx.fillStyle = 'purple';
   ctx.fillText(`(${mouseX}, ${mouseY})`, mouseX, mouseY);
