@@ -6,7 +6,11 @@ import { Layout, Game, Objects, GameStates } from './parameters';
 let mouseX, mouseY, dragOffsetX, dragOffsetY;
 
 // a "blank" level isn't exactly blank
-const blankLevel = [{ type: 2, x: 710, y: 320, w: 20, h: 20 }, { type: 1, x: 550, y: 320, w: 20, h: 20 }, { type: 3, x: 480, y: 380, w: 320, h: 20 }];
+const blankLevel = [
+  { type: 2, x: 710, y: 320, w: 20, h: 20 },
+  { type: 1, x: 550, y: 320, w: 20, h: 20 },
+  { type: 3, x: 480, y: 380, w: 320, h: 20 }
+];
 
 const editorState = {
   deleteObject: false,
@@ -178,16 +182,16 @@ const drawHelperLines = () => {
   for (let i = 0; i < nDivsHorizontal; i++) {
     // vertical lines
     ctx.beginPath();
-    ctx.moveTo(i * Layout.CANVAS_WIDTH / nDivsHorizontal, 0);
-    ctx.lineTo(i * Layout.CANVAS_WIDTH / nDivsHorizontal, Layout.CANVAS_HEIGHT);
+    ctx.moveTo((i * Layout.CANVAS_WIDTH) / nDivsHorizontal, 0);
+    ctx.lineTo((i * Layout.CANVAS_WIDTH) / nDivsHorizontal, Layout.CANVAS_HEIGHT);
     ctx.stroke();
   }
 
   for (let i = 0; i < nDivsVertical; i++) {
     // horizontal lines
     ctx.beginPath();
-    ctx.moveTo(0, i * Layout.CANVAS_HEIGHT / nDivsVertical);
-    ctx.lineTo(Layout.CANVAS_WIDTH, i * Layout.CANVAS_HEIGHT / nDivsVertical);
+    ctx.moveTo(0, (i * Layout.CANVAS_HEIGHT) / nDivsVertical);
+    ctx.lineTo(Layout.CANVAS_WIDTH, (i * Layout.CANVAS_HEIGHT) / nDivsVertical);
     ctx.stroke();
   }
   ctx.setLineDash([]);
@@ -226,7 +230,7 @@ const root = document.documentElement;
 // Space is expressed in pixels and time in frames in all kinematic quantities such as speed and acceleration.
 const pixPerMet = 5;
 const framesPerSec = 60;
-const gravitationalPull = 9.81 * pixPerMet / (framesPerSec ^ 2);
+const gravitationalPull = (9.81 * pixPerMet) / (framesPerSec ^ 2);
 
 const playerMaxSpeedHorizontal = 7;
 const playerMaxSpeedVertical = 10;
@@ -403,18 +407,20 @@ const updateGame = () => {
   }
 
   // Detect collisions.
-  levelObjects.filter(obj => obj.type === Objects.OBSTACLE).forEach(obstacle => {
-    const collision = collidePlayerObstacle(player, obstacle);
-    if (collision.isColliding) {
-      player.x += collision.deltaX;
-      player.y += collision.deltaY;
-      player.vx += collision.deltaVx;
-      player.vy += collision.deltaVy;
-      if (collision.resetJump) {
-        player.jumpDuration = maxJumpDuration;
+  levelObjects
+    .filter(obj => obj.type === Objects.OBSTACLE)
+    .forEach(obstacle => {
+      const collision = collidePlayerObstacle(player, obstacle);
+      if (collision.isColliding) {
+        player.x += collision.deltaX;
+        player.y += collision.deltaY;
+        player.vx += collision.deltaVx;
+        player.vy += collision.deltaVy;
+        if (collision.resetJump) {
+          player.jumpDuration = maxJumpDuration;
+        }
       }
-    }
-  });
+    });
 
   if (isDead()) {
     if (player.livesLeft === 1) {
@@ -448,7 +454,7 @@ const updateGame = () => {
   // Draw lives left
   var iLife = 0;
   for (var life in _.range(player.livesLeft - 1)) {
-    ctx.fillRect(10 + iLife*30, 10, Layout.PLAYER_W, Layout.PLAYER_H);
+    ctx.fillRect(10 + iLife * 30, 10, Layout.PLAYER_W, Layout.PLAYER_H);
     iLife++;
   }
 
@@ -456,7 +462,7 @@ const updateGame = () => {
   var iLevel = 0;
   ctx.fillStyle = 'black';
   for (var lev in _.range(levels.length - player.levelProgress - 1)) {
-    ctx.fillRect(Layout.CANVAS_WIDTH - 20 - iLevel*15, 10, 10, 10);
+    ctx.fillRect(Layout.CANVAS_WIDTH - 20 - iLevel * 15, 10, 10, 10);
     iLevel++;
   }
 };
