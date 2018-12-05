@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import levels from './levels';
+import levels from './levels.json';
 import { collidePointRectangle, collidePlayerObstacle } from './collision-detection';
 import { Layout, Game, Objects, GameStates } from './parameters';
 
@@ -137,7 +137,7 @@ const editorHandleKeyDown = e => {
       startLevelEditor(editorState.levelInd);
       break;
     case 80: // 'p'
-      console.log(JSON.stringify(levels).replace(/"/g, ''));
+      console.log(JSON.stringify(levels));
       break;
     case 16: // shift
       editorState.deleteObject = true;
