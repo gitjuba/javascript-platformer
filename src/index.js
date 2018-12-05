@@ -249,7 +249,7 @@ const resetPlayer = (levelInd, livesLeft) => {
   return {
     levelProgress: levelInd,
     alive: true,
-    livesLeft: livesLeft || Layout.NUM_LIVES,
+    livesLeft: livesLeft || Game.NUM_LIVES,
     w: Layout.PLAYER_W,
     h: Layout.PLAYER_H,
     x: startObj.x,
@@ -265,7 +265,7 @@ const resetPlayer = (levelInd, livesLeft) => {
   };
 };
 
-let player = resetPlayer(0, Layout.NUM_LIVES);
+let player = resetPlayer(0, Game.NUM_LIVES);
 
 const isDead = () => {
   return player.y > Layout.CANVAS_HEIGHT;
