@@ -3,6 +3,22 @@ import levels from './levels.json';
 import { collidePointRectangle, collidePlayerObstacle } from './collision-detection';
 import { Layout, Game, Objects, GameStates } from './parameters';
 
+import Splash from './splash';
+import GameOver from './game-over';
+import GameComplete from './game-complete';
+
+const State = {};
+function onStateChange(toState) {
+  console.log('on state chnage');
+  console.log(toState);
+  gameStateChange(toState);
+}
+
+State[GameStates.SPLASH] = new Splash(onStateChange);
+State[GameStates.GAME_COMPLETE] = new GameComplete(onStateChange);
+State[GameStates.GAME_OVER] = new GameOver(onStateChange);
+console.log(State);
+
 let mouseX, mouseY, dragOffsetX, dragOffsetY;
 
 // a "blank" level isn't exactly blank
@@ -285,47 +301,6 @@ const onSurface = levelObjects => {
   return false;
 };
 
-const updateSplash = () => {
-  const leftMargin = 100;
-  const topMargin = 200;
-
-  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
-
-  ctx.fillStyle = 'black';
-  ctx.font = '48px serif';
-  ctx.fillText('a platforming game', leftMargin, topMargin);
-  ctx.font = '24px serif';
-  ctx.fillText('arrow keys to control', leftMargin, topMargin + 100);
-  ctx.fillText('space bar to start', leftMargin, topMargin + 130);
-  ctx.fillText('esc to reset', leftMargin, topMargin + 160);
-};
-
-const updateGameOver = () => {
-  const leftMargin = 100;
-  const topMargin = 200;
-
-  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
-
-  ctx.fillStyle = 'black';
-  ctx.font = '48px serif';
-  ctx.fillText('game over', leftMargin, topMargin);
-  ctx.font = '24px serif';
-  ctx.fillText('press space', leftMargin, topMargin + 100);
-};
-
-const updateGameComplete = () => {
-  const leftMargin = 100;
-  const topMargin = 200;
-
-  ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
-
-  ctx.fillStyle = 'black';
-  ctx.font = '48px serif';
-  ctx.fillText('congratulations!', leftMargin, topMargin);
-  ctx.font = '24px serif';
-  ctx.fillText('press space', leftMargin, topMargin + 100);
-};
-
 const updateGame = () => {
   // Handle input. Player input changes the velocity.
   levelObjects = levels[player.levelProgress];
@@ -484,21 +459,14 @@ const updateEditor = () => {
 
 const update = () => {
   switch (gameState) {
-    case GameStates.SPLASH:
-      updateSplash();
-      break;
     case GameStates.GAME:
       updateGame();
       break;
     case GameStates.EDITOR:
       updateEditor();
       break;
-    case GameStates.GAME_OVER:
-      updateGameOver();
-      break;
-    case GameStates.GAME_COMPLETE:
-      updateGameComplete();
-      break;
+    default:
+      State[gameState].update(ctx);
   }
 
   window.requestAnimationFrame(update);
@@ -510,12 +478,6 @@ const gameStateChange = newState => {
   }
   let startingLevel = 0;
   // Remove event listeners of current state
-  if (gameState === GameStates.SPLASH) {
-    window.removeEventListener('keydown', splashHandleKeyDown);
-  }
-  if ([GameStates.GAME_OVER, GameStates.GAME_COMPLETE].includes(gameState)) {
-    window.removeEventListener('keydown', gameOverHandleKeyDown);
-  }
   if (gameState === GameStates.GAME) {
     window.removeEventListener('keydown', gameHandleKeyDown);
     window.removeEventListener('keyup', gameHandleKeyUp);
@@ -529,11 +491,8 @@ const gameStateChange = newState => {
     startingLevel = editorState.levelInd;
   }
   // Add new state event listeners
-  if (newState === GameStates.SPLASH) {
-    window.addEventListener('keydown', splashHandleKeyDown);
-  }
-  if ([GameStates.GAME_OVER, GameStates.GAME_COMPLETE].includes(newState)) {
-    window.addEventListener('keydown', gameOverHandleKeyDown);
+  if (newState === GameStates.SPLASH || newState === GameStates.GAME_COMPLETE || newState === GameStates.GAME_OVER) {
+    State[newState].onEnter();
   }
   if (newState === GameStates.GAME) {
     window.addEventListener('keydown', gameHandleKeyDown);
@@ -563,12 +522,6 @@ window.addEventListener('keydown', e => {
 const splashHandleKeyDown = e => {
   if (e.keyCode === 32) {
     gameStateChange(GameStates.GAME);
-  }
-};
-
-const gameOverHandleKeyDown = e => {
-  if (e.keyCode === 32) {
-    gameStateChange(GameStates.SPLASH);
   }
 };
 
