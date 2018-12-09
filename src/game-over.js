@@ -13,16 +13,11 @@ export default function GameOver(onStateChange) {
     }
   };
 
-  this.addEventListeners = function() {
-    console.log(this);
+  this.onEnter = function() {
+    console.log('game over on enter');
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
-  };
-
-  this.onEnter = function() {
-    console.log('game over on enter');
-    this.addEventListeners();
   };
 
   this.onExit = function(toState) {
