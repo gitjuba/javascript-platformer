@@ -10,7 +10,7 @@
     "email": "jussi.mattas@gmail.com"
   },
   "scripts": {
-    "dev": "webpack --mode development --watch"
+    "dev": "webpack --mode development --watch --devtool source-map"
   },
   "dependencies": {
     "lodash": "^4.17.11"
