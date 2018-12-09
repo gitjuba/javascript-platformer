@@ -2,11 +2,8 @@ import { Layout, Game, Objects, GameStates } from './parameters';
 import { collidePlayerObstacle } from './collision-detection';
 import * as _ from 'lodash';
 
-const levels = require('./levels.json');
-
-console.log(Game);
-
-function State() {
+function State(levels) {
+  this.levels = levels;
   this.params = Game;
 
   this.player = {
@@ -26,17 +23,16 @@ function State() {
     goal: {}
   };
 
-  this.resetLevel = function(level) {
-    const objects = levels[level].filter(obj => obj.type === Objects.OBSTACLE);
-    const start = levels[level].find(obj => obj.type === Objects.PLAYER);
-    const goal = levels[level].find(obj => obj.type === Objects.GOAL);
+  this.resetLevel = function(levelInd) {
+    const objects = this.levels[levelInd].filter(obj => obj.type === Objects.OBSTACLE);
+    const start = this.levels[levelInd].find(obj => obj.type === Objects.PLAYER);
+    const goal = this.levels[levelInd].find(obj => obj.type === Objects.GOAL);
     this.level = {
-      ind: level,
+      ind: levelInd,
       objects,
       start,
       goal
     };
-    console.log(this.level.start.x);
 
     this.player = {
       x: start.x,
@@ -47,24 +43,27 @@ function State() {
       jumpDuration: 0,
       numLives: this.player.numLives
     };
-    console.log(this.player);
   };
 
   this.resetCurrentLevel = function() {
     this.resetLevel(this.level.ind);
   };
 
-  this.resetGame = function() {
+  this.resetLives = function() {
     this.player.numLives = this.params.NUM_LIVES;
+  };
+
+  this.resetGame = function() {
+    this.resetLives();
     this.resetLevel(0);
   };
 
   this.isLastLevel = function() {
-    return this.level.ind === levels.length - 1;
+    return this.level.ind === this.levels.length - 1;
   };
 
   this.nextLevel = function() {
-    if (this.level.ind === levels.length - 1) {
+    if (this.level.ind === this.levels.length - 1) {
       this.resetLevel(0);
     } else {
       this.resetLevel(this.level.ind + 1);
@@ -73,7 +72,7 @@ function State() {
 
   this.previousLevel = function() {
     if (this.level.ind === 0) {
-      this.resetLevel(levels.length - 1);
+      this.resetLevel(this.levels.length - 1);
     } else {
       this.resetLevel(this.level.ind - 1);
     }
@@ -198,23 +197,21 @@ function Input() {
   };
 }
 
-export default function GameLoop(onStateChange) {
-  this.state = new State();
+export default function GameLoop(onStateChange, initParams) {
+  this.state = new State(initParams.levels);
   this.input = new Input();
 
   this.eventHandlers = {
     keydown: e => {
       switch (e.keyCode) {
         case 69: // 'e'
-          console.log('todo: open editor');
-          // gameStateChange(GameStates.EDITOR);
+          this.onExit(GameStates.LEVEL_EDITOR);
           break;
         case 37: // left
           this.input.right = false;
           this.input.left = true;
           break;
         case 38: // up
-        case 18: // once I saw this logged when pressing up (?)
           this.input.up = true;
           break;
         case 39: // right
@@ -250,12 +247,26 @@ export default function GameLoop(onStateChange) {
     }
   };
 
-  this.onEnter = function() {
+  this.onEnter = function(params) {
     console.log('game loop on enter');
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
-    this.state.resetGame();
+    if (params) {
+      if ('levels' in params) {
+        console.log('override levels');
+        this.state.levels = params.levels;
+      }
+      if ('levelInd' in params) {
+        console.log('start from ' + params.levelInd);
+        this.state.resetLives();
+        this.state.resetLevel(params.levelInd);
+      } else {
+        this.state.resetGame();
+      }
+    } else {
+      this.state.resetGame();
+    }
   };
 
   this.onExit = function(toState) {
@@ -264,7 +275,7 @@ export default function GameLoop(onStateChange) {
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
-    onStateChange(toState);
+    onStateChange(toState, { levelInd: this.getLevelProgress() });
   };
 
   this.getLevelProgress = function() {
@@ -318,7 +329,7 @@ export default function GameLoop(onStateChange) {
     // Level progress
     var iLevel = 0;
     ctx.fillStyle = 'black';
-    for (var lev in _.range(levels.length - this.state.level.ind - 1)) {
+    for (var lev in _.range(this.state.levels.length - this.state.level.ind - 1)) {
       ctx.fillRect(Layout.CANVAS_WIDTH - 20 - iLevel * 15, 10, 10, 10);
       iLevel++;
     }
