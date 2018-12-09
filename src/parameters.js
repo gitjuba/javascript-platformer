@@ -21,6 +21,7 @@ export const Game = {
   playerAccHorizontalGround: 1.5,
   playerAccHorizontalAirForced: 0.5,
   playerAccHorizontalAirFree: 0.1,
+  gravitationalPull,
   playerAccVertical: 5 * gravitationalPull,
   maxJumpDuration: 10
 };
