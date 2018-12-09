@@ -17454,20 +17454,13 @@ function GameComplete(onStateChange) {
     }
   };
 
-  this.addEventListeners = function() {
-    console.log(this);
+  this.onEnter = function() {
     lodash__WEBPACK_IMPORTED_MODULE_1__["keys"](this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
   };
 
-  this.onEnter = function() {
-    console.log('game complete on enter');
-    this.addEventListeners();
-  };
-
   this.onExit = function(toState) {
-    console.log('game complete on exit');
     lodash__WEBPACK_IMPORTED_MODULE_1__["keys"](this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
@@ -17752,17 +17745,14 @@ function GameLoop(onStateChange, initParams) {
   };
 
   this.onEnter = function(params) {
-    console.log('game loop on enter');
     lodash__WEBPACK_IMPORTED_MODULE_2__["keys"](this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
     if (params) {
       if ('levels' in params) {
-        console.log('override levels');
         this.state.levels = params.levels;
       }
       if ('levelInd' in params) {
-        console.log('start from ' + params.levelInd);
         this.state.resetLives();
         this.state.resetLevel(params.levelInd);
       } else {
@@ -17775,7 +17765,6 @@ function GameLoop(onStateChange, initParams) {
 
   this.onExit = function(toState) {
     this.input.reset();
-    console.log('game loop on exit');
     lodash__WEBPACK_IMPORTED_MODULE_2__["keys"](this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
@@ -17872,14 +17861,12 @@ function GameOver(onStateChange) {
   };
 
   this.onEnter = function() {
-    console.log('game over on enter');
     lodash__WEBPACK_IMPORTED_MODULE_1__["keys"](this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
   };
 
   this.onExit = function(toState) {
-    console.log('game over on exit');
     lodash__WEBPACK_IMPORTED_MODULE_1__["keys"](this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
@@ -17946,8 +17933,6 @@ const globalOffset = {
 const State = {};
 let currentState;
 function onStateChange(toState, params) {
-  console.log('on state change');
-  console.log(params);
   // gameStateChange(toState, params);
   if (toState === currentState) {
     return;
@@ -18173,7 +18158,6 @@ function LevelEditor(onStateChange, initParams) {
   };
 
   this.onEnter = function(params) {
-    console.log('level editor on enter');
     lodash__WEBPACK_IMPORTED_MODULE_0__["keys"](this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
@@ -18181,7 +18165,6 @@ function LevelEditor(onStateChange, initParams) {
   };
 
   this.onExit = function(toState) {
-    console.log('level editor on exit');
     lodash__WEBPACK_IMPORTED_MODULE_0__["keys"](this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
@@ -18351,20 +18334,13 @@ function Splash(onStateChange) {
     }
   };
 
-  this.addEventListeners = function() {
-    console.log(this);
+  this.onEnter = function() {
     lodash__WEBPACK_IMPORTED_MODULE_1__["keys"](this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
   };
 
-  this.onEnter = function() {
-    console.log('splash on enter');
-    this.addEventListeners();
-  };
-
   this.onExit = function(toState) {
-    console.log('splash on exit');
     lodash__WEBPACK_IMPORTED_MODULE_1__["keys"](this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
