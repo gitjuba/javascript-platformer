@@ -1,4 +1,3 @@
-
 const GRID_SIZE = 10;
 
 export const Layout = {
@@ -10,8 +9,21 @@ export const Layout = {
   PLAYER_H: 2 * GRID_SIZE
 };
 
+const pixPerMet = 5;
+const framesPerSec = 60;
+const gravitationalPull = (9.81 * pixPerMet) / (framesPerSec ^ 2);
+
 export const Game = {
-  NUM_LIVES: 3
+  NUM_LIVES: 3,
+
+  playerMaxSpeedHorizontal: 7,
+  playerMaxSpeedVertical: 10,
+  playerAccHorizontalGround: 1.5,
+  playerAccHorizontalAirForced: 0.5,
+  playerAccHorizontalAirFree: 0.1,
+  gravitationalPull,
+  playerAccVertical: 5 * gravitationalPull,
+  maxJumpDuration: 10
 };
 
 export const Objects = {
