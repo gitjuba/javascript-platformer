@@ -248,17 +248,14 @@ export default function GameLoop(onStateChange, initParams) {
   };
 
   this.onEnter = function(params) {
-    console.log('game loop on enter');
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
     if (params) {
       if ('levels' in params) {
-        console.log('override levels');
         this.state.levels = params.levels;
       }
       if ('levelInd' in params) {
-        console.log('start from ' + params.levelInd);
         this.state.resetLives();
         this.state.resetLevel(params.levelInd);
       } else {
@@ -271,7 +268,6 @@ export default function GameLoop(onStateChange, initParams) {
 
   this.onExit = function(toState) {
     this.input.reset();
-    console.log('game loop on exit');
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });

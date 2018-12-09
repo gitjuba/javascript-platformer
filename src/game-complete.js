@@ -13,20 +13,13 @@ export default function GameComplete(onStateChange) {
     }
   };
 
-  this.addEventListeners = function() {
-    console.log(this);
+  this.onEnter = function() {
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
   };
 
-  this.onEnter = function() {
-    console.log('game complete on enter');
-    this.addEventListeners();
-  };
-
   this.onExit = function(toState) {
-    console.log('game complete on exit');
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });

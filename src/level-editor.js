@@ -175,7 +175,6 @@ export default function LevelEditor(onStateChange, initParams) {
   };
 
   this.onEnter = function(params) {
-    console.log('level editor on enter');
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
@@ -183,7 +182,6 @@ export default function LevelEditor(onStateChange, initParams) {
   };
 
   this.onExit = function(toState) {
-    console.log('level editor on exit');
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });

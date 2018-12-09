@@ -14,14 +14,12 @@ export default function GameOver(onStateChange) {
   };
 
   this.onEnter = function() {
-    console.log('game over on enter');
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
   };
 
   this.onExit = function(toState) {
-    console.log('game over on exit');
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });

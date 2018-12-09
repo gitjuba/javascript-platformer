@@ -25,8 +25,6 @@ const globalOffset = {
 const State = {};
 let currentState;
 function onStateChange(toState, params) {
-  console.log('on state change');
-  console.log(params);
   // gameStateChange(toState, params);
   if (toState === currentState) {
     return;

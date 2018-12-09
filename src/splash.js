@@ -13,20 +13,13 @@ export default function Splash(onStateChange) {
     }
   };
 
-  this.addEventListeners = function() {
-    console.log(this);
+  this.onEnter = function() {
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
   };
 
-  this.onEnter = function() {
-    console.log('splash on enter');
-    this.addEventListeners();
-  };
-
   this.onExit = function(toState) {
-    console.log('splash on exit');
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
