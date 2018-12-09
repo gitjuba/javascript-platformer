@@ -102,7 +102,7 @@ export default function LevelEditor(onStateChange, initParams) {
           this.editLevel(this.levelInd);
           break;
         case 80: // 'p'
-          console.log(JSON.stringify(levels, null, 2));
+          console.log(JSON.stringify(this.levels, null, 2));
           break;
         case 16: // shift
           this.deleteObject = true;
