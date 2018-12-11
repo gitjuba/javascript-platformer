@@ -1,5 +1,3 @@
-import { Layout } from './parameters';
-
 const collidePointRectangle = (x0, y0, x1, y1, w1, h1) => {
     return x0 > x1 && x0 < x1 + w1 && y0 > y1 && y0 < y1 + h1;
 };
@@ -14,17 +12,17 @@ const collidePlayerObstacle = (player, obstacle) => {
         deltaVy: 0,
         resetJump: false
     };
-    const aL = player.x + Layout.PLAYER_W - obstacle.x;
+    const aL = player.x + player.w - obstacle.x;
     const aR = obstacle.x + obstacle.w - player.x;
     if (aL > 0 && aR > 0) {
-        const aT = player.y + Layout.PLAYER_H - obstacle.y;
+        const aT = player.y + player.h - obstacle.y;
         const aB = obstacle.y + obstacle.h - player.y;
         if (aT > 0 && aB > 0) {
             collision.isColliding = true;
 
-            if (aL < Layout.PLAYER_W && Layout.PLAYER_W < aR) {
+            if (aL < player.w && player.w < aR) {
                 // left collision
-                if (aT < Layout.PLAYER_H && Layout.PLAYER_H < aB) {
+                if (aT < player.h && player.h < aB) {
                     // top-left
                     if (player.vx >= 0 && player.vy <= 0) {
                         // player velocity towards top-right
@@ -46,7 +44,7 @@ const collidePlayerObstacle = (player, obstacle) => {
                     } else {
                         console.log('Corner collision with velocity pointed away from obstacle!');
                     }
-                } else if (aB < Layout.PLAYER_H && Layout.PLAYER_H < aT) {
+                } else if (aB < player.h && player.h < aT) {
                     // bottom-left
                     if (player.vx >= 0 && player.vy >= 0) {
                         // player velocity towards bottom-right
@@ -75,9 +73,9 @@ const collidePlayerObstacle = (player, obstacle) => {
                     collision.deltaVx = -player.vx;
                     collision.deltaX = -aL;
                 }
-            } else if (aR < Layout.PLAYER_W && Layout.PLAYER_W < aL) {
+            } else if (aR < player.w && player.w < aL) {
                 // right collision
-                if (aT < Layout.PLAYER_H && Layout.PLAYER_H < aB) {
+                if (aT < player.h && player.h < aB) {
                     // top-right
                     if (player.vx <= 0 && player.vy <= 0) {
                         // player velocity towards top-left
@@ -99,7 +97,7 @@ const collidePlayerObstacle = (player, obstacle) => {
                     } else {
                         console.log('Corner collision with velocity pointed away from obstacle!');
                     }
-                } else if (aB < Layout.PLAYER_H && Layout.PLAYER_H < aT) {
+                } else if (aB < player.h && player.h < aT) {
                     // bottom-right
                     if (player.vx <= 0 && player.vy >= 0) {
                         // player velocity towards bottom-left
