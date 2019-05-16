@@ -9,6 +9,8 @@ function State(levels) {
   this.player = {
     x: 0,
     y: 0,
+    w: Layout.PLAYER_W,
+    h: Layout.PLAYER_H,
     vx: 0,
     vy: 0,
     newJump: true,
@@ -37,6 +39,8 @@ function State(levels) {
     this.player = {
       x: start.x,
       y: start.y,
+      w: Layout.PLAYER_W,
+      h: Layout.PLAYER_H,
       vx: 0,
       vy: 0,
       newJump: true,
