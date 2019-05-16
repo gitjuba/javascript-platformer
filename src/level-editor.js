@@ -13,6 +13,7 @@ export default function LevelEditor(onStateChange, initParams) {
   this.newObjectType = Objects.OBSTACLE;
   this.deleteObject = false;
 
+  this.mouseDown = false;
   this.mouseX = 0;
   this.mouseY = 0;
   this.dragOffsetX = 0;
@@ -107,6 +108,41 @@ export default function LevelEditor(onStateChange, initParams) {
         case 16: // shift
           this.deleteObject = true;
           break;
+        // 'y', 'h' and 'j', 'k' adjust width and height of object
+        case 89: // 'y',
+          if (this.selectedObject !== undefined) {
+            const obj = this.levelObjects[this.selectedObject];
+            if (obj.type === Objects.OBSTACLE) {
+              obj.y -= 10;
+              obj.h += 10;
+            }
+          }
+          break;
+        case 72: // 'h'
+          if (this.selectedObject !== undefined) {
+            const obj = this.levelObjects[this.selectedObject];
+            if (obj.type === Objects.OBSTACLE && obj.h > 10) {
+              obj.y += 10;
+              obj.h -= 10;
+            }
+          }
+          break;
+        case 74: // 'j',
+          if (this.selectedObject !== undefined) {
+            const obj = this.levelObjects[this.selectedObject];
+            if (obj.type === Objects.OBSTACLE && obj.w > 10) {
+              obj.w -= 10;
+            }
+          }
+          break;
+        case 75: // 'k'
+          if (this.selectedObject !== undefined) {
+            const obj = this.levelObjects[this.selectedObject];
+            if (obj.type === Objects.OBSTACLE) {
+              obj.w += 10;
+            }
+          }
+          break;
         default:
           console.log('key pressed: ' + e.keyCode);
           break;
@@ -124,20 +160,23 @@ export default function LevelEditor(onStateChange, initParams) {
     mousemove: e => {
       this.mouseX = e.clientX - this.globalOffset.x;
       this.mouseY = e.clientY - this.globalOffset.y;
-      if (this.selectedObject !== undefined) {
-        this.levelObjects[this.selectedObject].x = this.snapToGrid(this.mouseX - this.dragOffsetX);
-        this.levelObjects[this.selectedObject].y = this.snapToGrid(this.mouseY - this.dragOffsetY);
-      } else if (this.newObject !== undefined) {
-        if (this.newObjectType === Objects.OBSTACLE) {
-          this.newObject.w = this.snapToGrid(this.mouseX - this.newObject.x);
-          this.newObject.h = this.snapToGrid(this.mouseY - this.newObject.y);
-        } else {
-          this.newObject.x = this.snapToGrid(this.mouseX);
-          this.newObject.y = this.snapToGrid(this.mouseY);
+      if (this.mouseDown) {
+        if (this.selectedObject !== undefined) {
+          this.levelObjects[this.selectedObject].x = this.snapToGrid(this.mouseX - this.dragOffsetX);
+          this.levelObjects[this.selectedObject].y = this.snapToGrid(this.mouseY - this.dragOffsetY);
+        } else if (this.newObject !== undefined) {
+          if (this.newObjectType === Objects.OBSTACLE) {
+            this.newObject.w = this.snapToGrid(this.mouseX - this.newObject.x);
+            this.newObject.h = this.snapToGrid(this.mouseY - this.newObject.y);
+          } else {
+            this.newObject.x = this.snapToGrid(this.mouseX);
+            this.newObject.y = this.snapToGrid(this.mouseY);
+          }
         }
       }
     },
     mousedown: e => {
+      this.mouseDown = true;
       this.selectedObject = this.getObjectUnderCursor();
       if (this.selectedObject !== undefined) {
         if (this.deleteObject) {
@@ -164,7 +203,7 @@ export default function LevelEditor(onStateChange, initParams) {
       }
     },
     mouseup: () => {
-      this.selectedObject = undefined;
+      this.mouseDown = false;
       if (this.newObject !== undefined) {
         if (this.checkDimensions(this.newObject)) {
           this.levelObjects.push(this.newObject);
@@ -190,6 +229,7 @@ export default function LevelEditor(onStateChange, initParams) {
 
   this.drawHelperLines = function(ctx) {
     ctx.strokeStyle = 'lightgreen';
+    ctx.setLineDash([]);
     // divide to quadrants
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -246,6 +286,12 @@ export default function LevelEditor(onStateChange, initParams) {
     if (this.newObject !== undefined) {
       ctx.fillStyle = this.getFillStyle(this.newObject.type);
       ctx.fillRect(this.newObject.x, this.newObject.y, this.newObject.w, this.newObject.h);
+    }
+    if (this.selectedObject !== undefined) {
+      const obj = this.levelObjects[this.selectedObject];
+      ctx.strokeStyle = '#f0f';
+      ctx.setLineDash([5, 10])
+      ctx.strokeRect(obj.x - 5, obj.y - 5, obj.w + 10, obj.h + 10);
     }
   };
 }
