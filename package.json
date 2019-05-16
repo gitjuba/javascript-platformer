@@ -10,6 +10,7 @@
     "email": "jussi.mattas@gmail.com"
   },
   "scripts": {
+    "build": "webpack --mode production",
     "dev": "webpack --mode development --watch --devtool source-map",
     "test": "mocha --require @babel/register"
   },
