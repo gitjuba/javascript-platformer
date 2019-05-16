@@ -16,7 +16,6 @@ describe('collision-detection', function() {
       const player = { x: 100, y: 100, w: 20, h: 20, vx: 5, vy: 0 };
       const obstacle = { x: 119, y: 50, w: 100, h: 100 };
       const collision = collidePlayerObstacle(player, obstacle);
-      console.log(collision);
       assert(collision.isColliding);
       assert(collision.deltaX < 0);
       assert(collision.deltaY === 0);
@@ -28,7 +27,6 @@ describe('collision-detection', function() {
       const player = { x: 100, y: 100, w: 20, h: 20, vx: 5, vy: 0 };
       const obstacle = { x: 119, y: 50, w: 100, h: 100 };
       const collision = collidePlayerObstacle(player, obstacle);
-      console.log(collision);
       assert(collision.isColliding);
       assert(collision.deltaX < 0);
       assert(collision.deltaY === 0);
