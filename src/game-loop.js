@@ -25,6 +25,8 @@ function State(levels) {
     goal: {}
   };
 
+  this.isDebugging = false;
+
   this.resetLevel = function(levelInd) {
     const objects = this.levels[levelInd].filter(obj => obj.type === Objects.OBSTACLE);
     const start = this.levels[levelInd].find(obj => obj.type === Objects.PLAYER);
@@ -87,7 +89,9 @@ function State(levels) {
   };
 
   this.loseLife = function() {
-    this.player.numLives -= 1;
+    if (!this.isDebugging) {
+      this.player.numLives -= 1;
+    }
   };
 
   this.isPlayerOutOfLives = function() {
@@ -236,6 +240,7 @@ export default function GameLoop(onStateChange, initParams) {
           break;
         case 68: // 'd'
           this.isDebugging = !this.isDebugging;
+          this.state.isDebugging = !this.state.isDebugging;
           if (this.isDebugging) {
             // Clear previous debug data when re-entering debug mode
             this.debugData.positions = [];
