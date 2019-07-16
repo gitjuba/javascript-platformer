@@ -205,6 +205,12 @@ export default function GameLoop(onStateChange, initParams) {
   this.state = new State(initParams.levels);
   this.input = new Input();
 
+  this.isDebugging = false;
+  this.debugData = {
+    positions: [],
+    velocity: []
+  }
+
   this.eventHandlers = {
     keydown: e => {
       switch (e.keyCode) {
@@ -228,6 +234,12 @@ export default function GameLoop(onStateChange, initParams) {
         case 80: // 'p' (retreat to previous level)
           this.state.previousLevel();
           break;
+        case 68: // 'd'
+          this.isDebugging = !this.isDebugging;
+          if (this.isDebugging) {
+            // Clear previous debug data when re-entering debug mode
+            this.debugData.positions = [];
+          }
         default:
           console.log(`key pressed: ${e.keyCode}`);
           break;
@@ -275,7 +287,7 @@ export default function GameLoop(onStateChange, initParams) {
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
-    onStateChange(toState, { levelInd: this.getLevelProgress() });
+    onStateChange(toState, { levelInd: this.getLevelProgress(), debugData: this.debugData });
   };
 
   this.getLevelProgress = function() {
@@ -315,11 +327,21 @@ export default function GameLoop(onStateChange, initParams) {
     const goal = this.state.level.goal;
     ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
 
+    // Player trail in debug mode
+    if (this.isDebugging) {
+      ctx.fillStyle = 'lightblue';
+      this.debugData.positions.forEach(pos => {
+        ctx.fillRect(pos.x, pos.y, Layout.PLAYER_W, Layout.PLAYER_H);
+      })
+      this.debugData.positions.push({x: this.state.player.x, y: this.state.player.y});
+    }
+
     // Draw player.
     ctx.fillStyle = 'blue';
     ctx.fillRect(this.state.player.x, this.state.player.y, Layout.PLAYER_W, Layout.PLAYER_H);
 
     // Draw lives left
+    ctx.fillStyle = 'blue';
     var iLife = 0;
     for (var life in _.range(this.state.player.numLives - 1)) {
       ctx.fillRect(10 + iLife * 30, 10, Layout.PLAYER_W, Layout.PLAYER_H);
