@@ -143,6 +143,18 @@ export default function LevelEditor(onStateChange, initParams) {
             }
           }
           break;
+        case 67: // 'c' copies selected object
+          if (this.selectedObject !== undefined) {
+            const obj = this.levelObjects[this.selectedObject];
+            if (obj.type === Objects.OBSTACLE) {
+              const clone = _.cloneDeep(obj);
+              clone.x += 10;
+              clone.y += 10;
+              this.levelObjects.push(clone);
+              this.selectedObject = this.levelObjects.length - 1;
+            }
+          }
+
         default:
           console.log('key pressed: ' + e.keyCode);
           break;
