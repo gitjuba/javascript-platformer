@@ -15,7 +15,7 @@
     "test": "mocha --require @babel/register"
   },
   "dependencies": {
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.14"
   },
   "devDependencies": {
     "@babel/core": "^7.2.0",
@@ -26,6 +26,8 @@
     "webpack-cli": "^3.1.0"
   },
   "babel": {
-    "presets": ["@babel/preset-env"]
+    "presets": [
+      "@babel/preset-env"
+    ]
   }
 }
