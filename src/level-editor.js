@@ -20,6 +20,11 @@ export default function LevelEditor(onStateChange, initParams) {
   this.dragOffsetY = 0;
   this.globalOffset = initParams.globalOffset;
 
+  this.debugData = {
+    positions: [],
+    velocity: []
+  };
+
   this.editLevel = function(levelInd) {
     this.levelInd = levelInd;
     this.levelObjects = this.levels[levelInd];
@@ -229,6 +234,7 @@ export default function LevelEditor(onStateChange, initParams) {
     _.keys(this.eventHandlers).forEach(event => {
       window.addEventListener(event, this.eventHandlers[event]);
     });
+    this.debugData = params.debugData;
     this.editLevel(params.levelInd);
   };
 
@@ -289,16 +295,30 @@ export default function LevelEditor(onStateChange, initParams) {
   this.update = function(ctx) {
     ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
     this.drawHelperLines(ctx);
+
+    // Possible debugging data from game loop (play test)
+    ctx.fillStyle = 'lightblue';
+    this.debugData.positions.forEach(pos => {
+      ctx.fillRect(pos.x, pos.y, Layout.PLAYER_W, Layout.PLAYER_H);
+    });
+
+    // Mouse pointer coordinates
     ctx.fillStyle = 'purple';
     ctx.fillText(`(${this.mouseX}, ${this.mouseY})`, this.mouseX, this.mouseY);
+
+    // Level layout
     this.levelObjects.forEach(object => {
       ctx.fillStyle = this.getFillStyle(object.type);
       ctx.fillRect(object.x, object.y, object.w, object.h);
     });
+
+    // Object being laid out atm
     if (this.newObject !== undefined) {
       ctx.fillStyle = this.getFillStyle(this.newObject.type);
       ctx.fillRect(this.newObject.x, this.newObject.y, this.newObject.w, this.newObject.h);
     }
+
+    // Dashed line around selected object
     if (this.selectedObject !== undefined) {
       const obj = this.levelObjects[this.selectedObject];
       ctx.strokeStyle = '#f0f';
