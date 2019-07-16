@@ -340,6 +340,11 @@ export default function GameLoop(onStateChange, initParams) {
     ctx.fillStyle = 'blue';
     ctx.fillRect(this.state.player.x, this.state.player.y, Layout.PLAYER_W, Layout.PLAYER_H);
 
+    if (this.isDebugging) {
+      ctx.fillStyle = 'purple';
+      ctx.fillText(`(${this.state.player.vx.toFixed(1)}, ${this.state.player.vy.toFixed(1)})`, 10, 50);
+    }
+
     // Draw lives left
     ctx.fillStyle = 'blue';
     var iLife = 0;
