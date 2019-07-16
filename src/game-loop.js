@@ -318,15 +318,6 @@ export default function GameLoop(onStateChange, initParams) {
     // Clear previous frame.
     ctx.clearRect(0, 0, Layout.CANVAS_WIDTH, Layout.CANVAS_HEIGHT);
 
-    // Draw obstacles.
-    ctx.fillStyle = 'black';
-    this.state.level.objects.forEach(obj => ctx.fillRect(obj.x, obj.y, obj.w, obj.h));
-
-    // Draw goal
-    ctx.fillStyle = 'red';
-    const goal = this.state.level.goal;
-    ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
-
     // Player trail in debug mode
     if (this.isDebugging) {
       ctx.fillStyle = 'lightblue';
@@ -335,6 +326,15 @@ export default function GameLoop(onStateChange, initParams) {
       })
       this.debugData.positions.push({x: this.state.player.x, y: this.state.player.y});
     }
+
+    // Draw obstacles.
+    ctx.fillStyle = 'black';
+    this.state.level.objects.forEach(obj => ctx.fillRect(obj.x, obj.y, obj.w, obj.h));
+
+    // Draw goal
+    ctx.fillStyle = 'red';
+    const goal = this.state.level.goal;
+    ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
 
     // Draw player.
     ctx.fillStyle = 'blue';
