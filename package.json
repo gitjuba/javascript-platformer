@@ -10,8 +10,8 @@
     "email": "jussi.mattas@gmail.com"
   },
   "scripts": {
-    "build:prod": "ENV=prod webpack",
-    "dev-server": "webpack-dev-server",
+    "build": "ENV=prod webpack",
+    "dev": "webpack-dev-server",
     "test": "mocha --require @babel/register"
   },
   "dependencies": {

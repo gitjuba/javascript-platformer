@@ -9,7 +9,7 @@ module.exports = {
   mode: isProd ? 'production' : 'development',
   entry: './src/index.js',
   output: {
-    path: __dirname + '/dist',
+    path: __dirname + '/docs',
     filename: 'main.js'
   },
   devtool: isProd ? '' : 'cheap-eval-source-map',
