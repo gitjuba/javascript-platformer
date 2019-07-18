@@ -21,7 +21,7 @@ module.exports = {
       app.use(bodyParser.json());
       app.post('/levels', (req, res) => {
         try {
-          fs.writeFileSync('./src/levels.json', JSON.stringify(req.body, null, 2), 'utf8');
+          fs.writeFileSync('./src/levels.json', JSON.stringify(req.body, null, 2) + '\n', 'utf8');
           res.json({ message: 'Levels exported' });
         } catch (err) {
           res.json({ message: 'Error' });
