@@ -248,6 +248,7 @@ export default function LevelEditor(onStateChange, initParams) {
   };
 
   this.onExit = function(toState) {
+    this.selectedObject = undefined;
     _.keys(this.eventHandlers).forEach(event => {
       window.removeEventListener(event, this.eventHandlers[event]);
     });
