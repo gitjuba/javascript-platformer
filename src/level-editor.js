@@ -313,6 +313,7 @@ export default function LevelEditor(onStateChange, initParams) {
 
     // Mouse pointer coordinates
     ctx.fillStyle = 'purple';
+    ctx.font = '10px monospace';
     ctx.fillText(`(${this.mouseX}, ${this.mouseY})`, this.mouseX, this.mouseY);
 
     // Level layout
