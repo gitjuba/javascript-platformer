@@ -4,7 +4,7 @@ A (for now extremely) minimalistic platformer written in JavaScript.
 
 ## Usage
 
-To play, open `dist/index.html` in a browser. To develop, run `npm install` to install dependencies and `npm run dev` to build the Webpack bundle (watches for changes in source files and re-builds automatically). And `npm test` to run the little test suite.
+To play, open `docs/index.html` in a browser. To develop, run `npm install` to install dependencies and `npm run dev` to start the dev-server, see console output for URL. And `npm test` to run the little test suite (not all that useful atm...).
 
 ## Gameplay goal I (done)
 
