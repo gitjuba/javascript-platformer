@@ -321,12 +321,18 @@ export default function LevelEditor(onStateChange, initParams) {
     this.levelObjects.forEach(object => {
       ctx.fillStyle = this.getFillStyle(object.type);
       ctx.fillRect(object.x, object.y, object.w, object.h);
+      ctx.fillStyle = 'purple';
+      ctx.font = '10px monospace';
+      ctx.fillText(`(${object.x}, ${object.y}, ${object.w}, ${object.h})`, object.x, object.y)
     });
 
     // Object being laid out atm
     if (this.newObject !== undefined) {
       ctx.fillStyle = this.getFillStyle(this.newObject.type);
       ctx.fillRect(this.newObject.x, this.newObject.y, this.newObject.w, this.newObject.h);
+      ctx.fillStyle = 'purple';
+      ctx.font = '10px monospace';
+      ctx.fillText(`(${this.newObject.x}, ${this.newObject.y}, ${this.newObject.w}, ${this.newObject.h})`, this.newObject.x, this.newObject.y)
     }
 
     // Dashed line around selected object
