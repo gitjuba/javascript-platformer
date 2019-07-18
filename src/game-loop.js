@@ -347,7 +347,8 @@ export default function GameLoop(onStateChange, initParams) {
 
     if (this.isDebugging) {
       ctx.fillStyle = 'purple';
-      ctx.fillText(`(${this.state.player.vx.toFixed(1)}, ${this.state.player.vy.toFixed(1)})`, 10, 50);
+      ctx.font = '10px monospace';
+      ctx.fillText(`v = (${this.state.player.vx.toFixed(1)}, ${this.state.player.vy.toFixed(1)})`, 10, 50);
     }
 
     // Draw lives left
