@@ -13,9 +13,11 @@ module.exports = {
     filename: 'main.js'
   },
   devtool: isProd ? '' : 'cheap-eval-source-map',
-  plugins: [new HtmlWebpackPlugin({
-    template: './src/index.html'
-  })],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html'
+    })
+  ],
   devServer: {
     before: (app, server) => {
       app.use(bodyParser.json());
@@ -26,7 +28,7 @@ module.exports = {
         } catch (err) {
           res.json({ message: 'Error' });
         }
-      })
+      });
     }
   }
 };

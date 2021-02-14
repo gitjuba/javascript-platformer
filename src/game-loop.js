@@ -213,7 +213,7 @@ export default function GameLoop(onStateChange, initParams) {
   this.debugData = {
     positions: [],
     velocity: []
-  }
+  };
 
   this.eventHandlers = {
     keydown: e => {
@@ -245,6 +245,7 @@ export default function GameLoop(onStateChange, initParams) {
             // Clear previous debug data when re-entering debug mode
             this.debugData.positions = [];
           }
+          break;
         default:
           console.log(`key pressed: ${e.keyCode}`);
           break;
@@ -328,8 +329,8 @@ export default function GameLoop(onStateChange, initParams) {
       ctx.fillStyle = 'lightblue';
       this.debugData.positions.forEach(pos => {
         ctx.fillRect(pos.x, pos.y, Layout.PLAYER_W, Layout.PLAYER_H);
-      })
-      this.debugData.positions.push({x: this.state.player.x, y: this.state.player.y});
+      });
+      this.debugData.positions.push({ x: this.state.player.x, y: this.state.player.y });
     }
 
     // Draw obstacles.
@@ -353,18 +354,14 @@ export default function GameLoop(onStateChange, initParams) {
 
     // Draw lives left
     ctx.fillStyle = 'blue';
-    var iLife = 0;
-    for (var life in _.range(this.state.player.numLives - 1)) {
+    _.range(this.state.player.numLives - 1).forEach(iLife => {
       ctx.fillRect(10 + iLife * 30, 10, Layout.PLAYER_W, Layout.PLAYER_H);
-      iLife++;
-    }
+    });
 
     // Level progress
-    var iLevel = 0;
     ctx.fillStyle = 'black';
-    for (var lev in _.range(this.state.levels.length - this.state.level.ind - 1)) {
+    _.range(this.state.levels.length - this.state.level.ind - 1).forEach(iLevel => {
       ctx.fillRect(Layout.CANVAS_WIDTH - 20 - iLevel * 15, 10, 10, 10);
-      iLevel++;
-    }
+    });
   };
 }

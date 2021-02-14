@@ -115,9 +115,11 @@ export default function LevelEditor(onStateChange, initParams) {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(this.levels)
-          }).then(res => res.json()).then(res => {
-            console.log(res);
           })
+            .then(res => res.json())
+            .then(res => {
+              console.log(res);
+            });
           break;
         case 16: // shift
           this.deleteObject = true;
@@ -323,7 +325,7 @@ export default function LevelEditor(onStateChange, initParams) {
       ctx.fillRect(object.x, object.y, object.w, object.h);
       ctx.fillStyle = 'purple';
       ctx.font = '10px monospace';
-      ctx.fillText(`(${object.x}, ${object.y}, ${object.w}, ${object.h})`, object.x, object.y)
+      ctx.fillText(`(${object.x}, ${object.y}, ${object.w}, ${object.h})`, object.x, object.y);
     });
 
     // Object being laid out atm
@@ -332,14 +334,18 @@ export default function LevelEditor(onStateChange, initParams) {
       ctx.fillRect(this.newObject.x, this.newObject.y, this.newObject.w, this.newObject.h);
       ctx.fillStyle = 'purple';
       ctx.font = '10px monospace';
-      ctx.fillText(`(${this.newObject.x}, ${this.newObject.y}, ${this.newObject.w}, ${this.newObject.h})`, this.newObject.x, this.newObject.y)
+      ctx.fillText(
+        `(${this.newObject.x}, ${this.newObject.y}, ${this.newObject.w}, ${this.newObject.h})`,
+        this.newObject.x,
+        this.newObject.y
+      );
     }
 
     // Dashed line around selected object
     if (this.selectedObject !== undefined) {
       const obj = this.levelObjects[this.selectedObject];
       ctx.strokeStyle = '#f0f';
-      ctx.setLineDash([5, 10])
+      ctx.setLineDash([5, 10]);
       ctx.strokeRect(obj.x - 5, obj.y - 5, obj.w + 10, obj.h + 10);
     }
   };
